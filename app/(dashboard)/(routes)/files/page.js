@@ -3,7 +3,7 @@ import React, { useEffect, useState } from "react";
 import FileCards from "./_components/FileCards";
 import { doc, getDoc, getFirestore } from "firebase/firestore";
 import { useUser } from "@clerk/nextjs";
-import { app } from "@/FirebaseConfig";
+import { app } from "../../../../FirebaseConfig";
 
 function Files() {
   const db = getFirestore(app);

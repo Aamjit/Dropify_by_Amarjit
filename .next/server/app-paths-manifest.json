@@ -1,7 +1,9 @@
 {
-  "/not-found": "app/not-found.js",
-  "/favicon.ico/route": "app/favicon.ico/route.js",
+  "/_not-found": "app/_not-found.js",
   "/api/email/route": "app/api/email/route.js",
+  "/favicon.ico/route": "app/favicon.ico/route.js",
+  "/page": "app/page.js",
   "/(dashboard)/(routes)/uploads/page": "app/(dashboard)/(routes)/uploads/page.js",
-  "/(dashboard)/(routes)/file-preview/[fileId]/page": "app/(dashboard)/(routes)/file-preview/[fileId]/page.js"
+  "/(dashboard)/(routes)/file-preview/[fileId]/page": "app/(dashboard)/(routes)/file-preview/[fileId]/page.js",
+  "/(dashboard)/(routes)/files/page": "app/(dashboard)/(routes)/files/page.js"
 }
