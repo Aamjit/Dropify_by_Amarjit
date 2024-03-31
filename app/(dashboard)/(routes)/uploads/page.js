@@ -1,17 +1,23 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import UploadForm from "./_components/UploadForm";
-import { app } from "@/FirebaseConfig";
+import { app } from "../../../../FirebaseConfig";
 import {
   getStorage,
   ref,
   uploadBytesResumable,
   getDownloadURL,
 } from "firebase/storage";
-import { getFirestore, doc, setDoc } from "firebase/firestore";
+import {
+  getFirestore,
+  doc,
+  setDoc,
+  getDoc,
+  updateDoc,
+} from "firebase/firestore";
 import UploadSuccess from "./_components/UploadSuccess";
 import { useUser } from "@clerk/nextjs";
-import ShortUrl from "@/app/_utils/ShortUrl";
+import ShortUrl from "../../../_utils/ShortUrl";
 import { useRouter } from "next/navigation";
 import turl from "turl";
 
@@ -24,6 +30,9 @@ function Uploads() {
   const [showSuccess, setShowSuccess] = useState(false);
   const [uploadCompleted, setUploadCompleted] = useState(false);
   const [fileId, setFileId] = useState();
+
+  // console.log(ShortUrl());
+  // console.log(window.location.host);
 
   const uploadFile = (file) => {
     const metadata = {
@@ -59,35 +68,75 @@ function Uploads() {
   const saveToStore = async (file, fileUrl) => {
     const docId = Date.now().toString();
     const turlRef = turl;
+    // const shortUrl = "http://" + window.location.host + "/s/" + ShortUrl();
+    const shortUrl = ShortUrl();
 
-    await turlRef
-      ?.shorten(fileUrl)
-      .then((res) => {
+    // await turlRef
+    //   ?.shorten(fileUrl)
+    //   .then((res) => {
+    const fileObj = {
+      FileId: docId,
+      FileName: file.name,
+      FileType: file.type,
+      FileSize: file.size,
+      UserEmail: user.primaryEmailAddress.emailAddress,
+      UserName: user.username,
+      UserFullName: user.fullName,
+      FileUrl: fileUrl,
+      UserId: user.id,
+      UserImageUrl: user.imageUrl,
+      UserPhone: user.primaryPhoneNumber.phoneNumber,
+      Password: "",
+      IsPasswordProtected: false,
+      ShortUrl: shortUrl,
+    };
 
-        res != "" &&
-          setDoc(doc(db, "Uploaded_Files", docId), {
-            FileId: docId,
-            FileName: file.name,
-            FileType: file.type,
-            FileSize: file.size,
-            UserEmail: user.primaryEmailAddress.emailAddress,
-            UserName: user.username,
-            UserFullName: user.fullName,
-            FileUrl: fileUrl,
-            UserId: user.id,
-            UserImageUrl: user.imageUrl,
-            UserPhone: user.primaryPhoneNumber.phoneNumber,
-            Password: "",
-            IsPasswordProtected: false,
-            ShortUrl: res + '',
-          }).then(() => {
-            setUploadCompleted(true);
-            setFileId(docId);
-          });
+    // res != "" &&
+    setDoc(doc(db, "Uploaded_Files", docId), fileObj).then((res) => {
+      setUploadCompleted(true);
+      setFileId(docId);
+      addFileToUserLog(fileObj);
+    });
+    // })
+    // .catch((err) => {
+    //   console.log(err);
+    // });
+  };
+
+  const addFileToUserLog = async (fileObj) => {
+    const userLogRef = doc(db, "User_Log", fileObj.UserId);
+    const docSnap = await getDoc(userLogRef);
+
+    const userLogObj = {
+      FileId: fileObj.FileId,
+      FileName: fileObj.FileName,
+      FileUrl: fileObj.FileUrl,
+      UploadedDate: new Date(),
+      UploadedTime: new Date().getTime(),
+    };
+
+    if (docSnap.exists()) {
+      const docData = docSnap.data();
+      docData.log.push(userLogObj);
+      console.log(docData);
+
+      await updateDoc(userLogRef, {
+        log: docData.log,
       })
-      .catch((err) => {
-        console.log(err);
-      });
+        .then((res) => console.log(res))
+        .catch((err) => console.log(err));
+    } else {
+      fileObj &&
+        setDoc(userLogRef, {
+          log: [userLogObj],
+        })
+          .then((res) => {
+            console.log(res);
+          })
+          .catch((err) => {
+            console.log(err);
+          });
+    }
   };
 
   useEffect(() => {
@@ -96,7 +145,7 @@ function Uploads() {
       setTimeout(() => {
         setUploadCompleted(false);
         setShowSuccess(false);
-        router.push("/file-preview/" + fileId);
+        // router.push("/file-preview/" + fileId);
       }, 2000);
   }, [uploadCompleted == true]);
 

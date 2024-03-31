@@ -3,7 +3,6 @@ import React, { useState } from "react";
 import TopHeader from "./_components/TopHeader.js";
 import SideNav from "./_components/SideNav.js";
 
-
 function layout({ children }) {
 
   return (
