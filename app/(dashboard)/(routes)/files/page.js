@@ -1,6 +1,7 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import FileCards from "./_components/FileCards";
+import FileEmpty from "./_components/FileEmpty";
 import { doc, getDoc, getFirestore } from "firebase/firestore";
 import { useUser } from "@clerk/nextjs";
 import { app } from "../../../../FirebaseConfig";
@@ -27,7 +28,7 @@ function Files() {
   return (
     <div>
       {/* {userData && getUserLogs()} */}
-      {userLog && <FileCards userLog={userLog} />}
+      {userLog ? <FileCards userLog={userLog} /> : <FileEmpty />}
     </div>
   );
 }
