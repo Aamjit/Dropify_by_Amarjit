@@ -1,6 +1,6 @@
 "use client";
 
-import { CloudUpload, FilesIcon, HelpingHand } from "lucide-react";
+import { CloudUpload, FilesIcon, HelpingHand, ShieldPlusIcon } from "lucide-react";
 import Image from "next/image";
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
@@ -25,6 +25,12 @@ function SideNav() {
       icon: HelpingHand,
       path: "/support",
     },
+    {
+      id: 4,
+      name: "Upgrade",
+      icon: ShieldPlusIcon,
+      path: "/upgrade",
+    },
   ];
 
   const router = useRouter();
@@ -32,7 +38,7 @@ function SideNav() {
 
   const navClicked = (item,index) => {
     setActiveIndex(index);
-    console.log(item,index);
+    // console.log(item,index);
     router.push(item.path);
   };
 

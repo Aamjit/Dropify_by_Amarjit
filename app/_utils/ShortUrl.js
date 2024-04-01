@@ -5,14 +5,15 @@ const ShortUrl = () => {
     "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
   const getHash = customAlphabet(characters, 8);
   const domain = window.location.host;
-  console.log(domain)
+  console.log(domain);
+  const hashId = getHash();
   let Url;
   if (domain.toString().indexOf("localhost") !== -1) {
-    Url = "http://" + domain + "/s/" + getHash();
+    Url = "http://" + domain + "/s/" + hashId;
   } else {
-    Url = "https://" + domain + "/s/" + getHash();
+    Url = "https://" + domain + "/s/" + hashId;
   }
-  return Url;
+  return { shortUrl: Url, urlId: hashId };
 };
 
 export default ShortUrl;

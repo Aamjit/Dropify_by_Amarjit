@@ -11,7 +11,12 @@ function Files() {
   const [userLog, setUserLog] = useState(null);
   const [userData, setUserData] = useState();
 
-  const getUserLogs = async () => {
+  useEffect(() => {
+    user && setUserData(user);
+    !userLog && user && getUserLogs(user);
+  }, [user]);
+
+  const getUserLogs = async (user) => {
     const docSnap = await getDoc(doc(db, "User_Log", user?.id));
     if (docSnap.exists()) {
       const docData = docSnap.data();
@@ -21,7 +26,7 @@ function Files() {
 
   return (
     <div>
-      {user && !userLog && getUserLogs()}
+      {/* {userData && getUserLogs()} */}
       {userLog && <FileCards userLog={userLog} />}
     </div>
   );

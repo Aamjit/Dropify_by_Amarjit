@@ -14,7 +14,6 @@ export async function POST(req) {
       to: [reqData.targetEmail],
       subject: `Dropify | ${reqData?.UserfullName} shared a file with you`,
       react: EmailTemplate(reqData),
-      // react: { <div> },
     });
     console.log(data);
 

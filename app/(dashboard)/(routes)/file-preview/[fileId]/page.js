@@ -15,8 +15,8 @@ function FilePreview({ params }) {
   const User = useUser().user;
 
   useEffect(() => {
-    getFIleInfo(params.fileId);
-  }, []);
+    getFIleInfo(params?.fileId);
+  }, [!file]);
 
   const getFIleInfo = async (id) => {
     const docRef = doc(db, "Uploaded_Files", id);

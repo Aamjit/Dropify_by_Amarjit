@@ -1,36 +1,50 @@
 import { app } from "../../../../../../FirebaseConfig";
-import { doc, getFirestore, updateDoc } from "firebase/firestore";
+import { doc, getDoc, getFirestore, updateDoc } from "firebase/firestore";
 import { CopyCheck, CopyIcon } from "lucide-react";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import GlobalApi from "./../../../../../_utils/GlobalApi";
+import toast from "react-hot-toast";
 
 function FileForm({ file, user }) {
   const db = getFirestore(app);
   const [showPass, setShowPass] = useState();
-  const [passCheck, setPassCheck] = useState();
+  // const [passCheck, setPassCheck] = useState();
   const [newPassword, setNewPassword] = useState();
+  const [passSet, setPassSet] = useState();
   const [copied, setCopied] = useState(false);
   const [targetEmail, setTargetEmail] = useState();
-  // const resend = new Resend(process.env.RESEND_API_KEY);
+
+  console.log(file);
+
+  useEffect(() => {
+    if (file?.IsPasswordProtected == true) {
+      setPassSet(true);
+    }
+  }, [file]);
 
   const updatePassword = async () => {
     const passwordValid = checkPasswordValidity(newPassword);
+    const fileRef = doc(db, "Uploaded_Files", file?.FileId);
+
     if (!passwordValid) {
-      console.log("Password is not valid/strong.");
-      return;
-    }
-    if (passCheck) {
-      console.log("Password checked");
-      const fileRef = doc(db, "Uploaded_Files", file.FileId);
+      showErrorToast("Password is not valid/strong.");
+    } else {
       await updateDoc(fileRef, {
-        IsPasswordProtected: passCheck,
+        IsPasswordProtected: true,
         Password: newPassword,
       })
-        .then((res) => console.log(res))
-        .catch((err) => console.log(err));
-    } else {
-      console.log("Password check is not done!");
+        .then(() => {
+          showSuccessToast("Password added successfully");
+          // location.reload();
+        })
+        .catch((err) => {
+          console.log(err);
+          showErrorToast("Failed to add password");
+        });
     }
+    // else {
+    //   showErrorToast("Password check is not done!");
+    // }
   };
 
   const checkPasswordValidity = (password) => {
@@ -46,14 +60,33 @@ function FileForm({ file, user }) {
       targetEmail: targetEmail,
       userName: user.username,
       UserfullName: file.UserFullName,
-      fileName: file.FileId,
+      fileId: file.FileId,
+      fileName: file.FileName,
       fileSize: (file.FileSize / 1024 / 1024).toFixed(2) + "MB",
       fileType: file.FileType,
       shortUrl: file.ShortUrl,
       senderImage: file.UserImageUrl,
       senderEmail: file.UserEmail,
     };
-    GlobalApi.SendEmail(data).then((res) => console.log(res));
+
+    // send email to the recipient with the details of the shared file
+    GlobalApi.SendEmail(data)
+      .then(() => showSuccessToast("Email sent successfully."))
+      .catch((error) => showErrorToast(`Error sending the mail! ${error}`));
+  };
+
+  const showSuccessToast = (msg) => {
+    toast.success(msg, {
+      position: "top-center",
+      autoClose: 5000,
+    });
+  };
+
+  const showErrorToast = (msg) => {
+    toast.error(msg, {
+      position: "top-center",
+      autoClose: 5000,
+    });
   };
 
   return (
@@ -81,7 +114,9 @@ function FileForm({ file, user }) {
                 <CopyIcon
                   className="absolute text-gray-500 ml-2.5 cursor-pointer"
                   onClick={() => {
-                    // alert("Copied");
+                    {
+                      toast.success("Copied");
+                    }
                     navigator.clipboard.writeText(file?.ShortUrl);
                     setCopied(true);
                   }}
@@ -92,47 +127,49 @@ function FileForm({ file, user }) {
             </div>
           </div>
 
-          <div className="col-span-12">
-            <div className="flex flex-row items-center justify-start">
-              <input
-                type="checkbox"
-                id="passwordCheck"
-                onChange={(value) => {
-                  setPassCheck(value?.target.checked);
-                  setShowPass(value?.target.checked);
-                }}
-              />
-              <label
-                htmlFor="Password"
-                className="block text-sm ml-2 font-medium text-gray-700"
-              >
-                {" "}
-                Enable Password?{" "}
-              </label>
-            </div>
-
-            {showPass && (
-              <div className="flex flex-row items-center">
+          {
+            <div className="col-span-12">
+              <div className="flex flex-row items-center justify-start">
                 <input
-                  type="password"
-                  id="Password"
-                  name="password"
-                  placeholder="Password"
-                  onChange={(event) => {
-                    setNewPassword(event.target.value);
+                  type="checkbox"
+                  id="passwordCheck"
+                  onChange={(value) => {
+                    // setPassCheck(value?.target.checked);
+                    setShowPass(value?.target.checked);
                   }}
-                  className="p-2 mt-1 w-full rounded-md border-gray-400 bg-gray-50 text-sm text-gray-700 shadow-md"
                 />
-                <button
-                  className="ml-2.5 bg-primary text-white px-4 py-1 rounded-md"
-                  onClick={() => updatePassword()}
+                <label
+                  htmlFor="Password"
+                  className="block text-sm ml-2 font-medium text-gray-700"
                 >
                   {" "}
-                  Save{" "}
-                </button>
+                  Enable Password?{" "}
+                </label>
               </div>
-            )}
-          </div>
+
+              {showPass && (
+                <div className="flex flex-row items-center">
+                  <input
+                    type="password"
+                    id="Password"
+                    name="password"
+                    placeholder="Password"
+                    onChange={(event) => {
+                      setNewPassword(event.target.value);
+                    }}
+                    className="p-2 mt-1 w-full rounded-md border-gray-400 bg-gray-50 text-sm text-gray-700 shadow-md"
+                  />
+                  <button
+                    className="ml-2.5 bg-primary text-white px-4 py-1 rounded-md"
+                    onClick={() => updatePassword()}
+                  >
+                    {" "}
+                    Save{" "}
+                  </button>
+                </div>
+              )}
+            </div>
+          }
 
           <div className="col-span-12 border border-gray-200 rounded-md p-4">
             <div className="flex flex-row items-center justify-start">

@@ -1,17 +1,47 @@
-import React from "react";
+import { FileSearchIcon } from "lucide-react";
+import React, { useEffect, useState } from "react";
+import FileList from "./FileList";
 
-function FileCards({userLog}) {
+function FileCards({ userLog }) {
+  const [logData, setLogData] = useState();
+
+  useEffect(() => {
+    setLogData(userLog.log);
+  }, [!logData]);
+
+  const filterLog = (fileNameSearch) => {
+    setLogData(userLog.log);
+    if (fileNameSearch) {
+      setLogData(
+        logData.filter(
+          (elem) =>
+            elem?.FileName.toLowerCase().indexOf(
+              fileNameSearch.toLowerCase()
+            ) >= 0
+        )
+      );
+    }
+  };
+
   return (
-    <div className=" m-2 p-2">
-      <div className="grid grid-cols-1 gap-4 lg:grid-cols-4 lg:gap-8">
-        <div className="h-40 rounded-lg bg-gray-200">
-            {/* <h2>{userLog.log[0].FileName}</h2> */}
-            { console.log(userLog) }
+    <div className="m-2 p-2 grid grid-cols-1 gap-4">
+      {/* <div className=""> */}
+      <div className="rounded-md bg-gray-100 shadow-md px-2 py-4 my-2">
+        <h2 className="font-semibold">Search for file</h2>
+        <div className="flex w-full gap-2 bg-white p-1.5 my-4 rounded-lg">
+          <input
+            type="text"
+            placeholder="Enter filename..."
+            className="w-full"
+            onChange={(e) => {
+              filterLog(e.target.value);
+            }}
+          />
+          <FileSearchIcon className="text-gray-400" />
         </div>
-        {/* <div className="h-32 rounded-lg bg-gray-200"></div>
-        <div className="h-32 rounded-lg bg-gray-200"></div>
-        <div className="h-32 rounded-lg bg-gray-200"></div> */}
       </div>
+
+      {logData && <FileList userLog={logData} />}
     </div>
   );
 }

@@ -1,7 +1,15 @@
 const { default: axios } = require("axios");
 
-const SendEmail = (data) => axios.post("/api/email", data);
+let res, err;
+
+const SendEmail = (data) =>
+  axios
+    .post("/api/email", data)
+    .then((res) => (res = res))
+    .catch((err) => (err = err));
 
 export default {
   SendEmail,
+  res,
+  err,
 };

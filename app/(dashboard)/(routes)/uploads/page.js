@@ -20,6 +20,7 @@ import { useUser } from "@clerk/nextjs";
 import ShortUrl from "../../../_utils/ShortUrl";
 import { useRouter } from "next/navigation";
 import turl from "turl";
+import toast from "react-hot-toast";
 
 function Uploads() {
   const router = useRouter();
@@ -57,7 +58,7 @@ function Uploads() {
         console.log(error);
       },
       () => {
-        setShowSuccess(true);
+        // setShowSuccess(true);
         getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
           saveToStore(file, downloadURL);
         });
@@ -69,11 +70,8 @@ function Uploads() {
     const docId = Date.now().toString();
     const turlRef = turl;
     // const shortUrl = "http://" + window.location.host + "/s/" + ShortUrl();
-    const shortUrl = ShortUrl();
+    const { shortUrl, urlId } = ShortUrl();
 
-    // await turlRef
-    //   ?.shorten(fileUrl)
-    //   .then((res) => {
     const fileObj = {
       FileId: docId,
       FileName: file.name,
@@ -89,18 +87,22 @@ function Uploads() {
       Password: "",
       IsPasswordProtected: false,
       ShortUrl: shortUrl,
+      ShortUrlId: urlId,
     };
 
-    // res != "" &&
-    setDoc(doc(db, "Uploaded_Files", docId), fileObj).then((res) => {
-      setUploadCompleted(true);
-      setFileId(docId);
-      addFileToUserLog(fileObj);
-    });
-    // })
-    // .catch((err) => {
-    //   console.log(err);
-    // });
+    setDoc(doc(db, "Uploaded_Files", docId), fileObj)
+      .then((res) => {
+        setUploadCompleted(true);
+        setFileId(docId);
+        addFileToUserLog(fileObj);
+        toast.success("File uploaded successfully.", {
+          position: "top-right",
+          autoClose: 5000,
+        });
+      })
+      .catch((err) => {
+        console.log(err);
+      });
   };
 
   const addFileToUserLog = async (fileObj) => {
@@ -111,7 +113,9 @@ function Uploads() {
       FileId: fileObj.FileId,
       FileName: fileObj.FileName,
       FileUrl: fileObj.FileUrl,
-      UploadedDate: new Date(),
+      FileType: fileObj.FileType,
+      FileSize: (fileObj.FileSize/1024/1024).toFixed(2) + " MB", //
+      UploadedDate: new Date().toDateString(),
       UploadedTime: new Date().getTime(),
     };
 
@@ -145,8 +149,8 @@ function Uploads() {
       setTimeout(() => {
         setUploadCompleted(false);
         setShowSuccess(false);
-        // router.push("/file-preview/" + fileId);
-      }, 2000);
+        router.push("/file-preview/" + fileId);
+      }, 3000);
   }, [uploadCompleted == true]);
 
   return (
@@ -155,13 +159,14 @@ function Uploads() {
         className="fixed"
         style={{ display: `${showSuccess == true ? "" : "none"}` }}
       >
-        {showSuccess == true ? (
-          <UploadSuccess msg={"Uploaded succcessfully!"} />
-        ) : null}
+        {/* {showSuccess == true ? (
+          // <UploadSuccess msg={"Uploaded succcessfully!"} />
+          
+        ) : null} */}
         {/* <UploadSuccess msg={"Uploaded succcessfully!"} /> */}
-        {setTimeout(() => {
+        {/* {setTimeout(() => {
           setShowSuccess(false);
-        }, 3000)}
+        }, 3000)} */}
       </div>
       <UploadForm
         uploadSelectedFile={(data) => uploadFile(data)}
