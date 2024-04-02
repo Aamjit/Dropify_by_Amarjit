@@ -1,35 +1,42 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import FileCards from "./_components/FileCards";
-import FileEmpty from "./_components/FileEmpty";
+import EmptyData from "../../../_components/EmptyData";
 import { doc, getDoc, getFirestore } from "firebase/firestore";
 import { useUser } from "@clerk/nextjs";
 import { app } from "../../../../FirebaseConfig";
+import Loading from "../../loading";
 
 function Files() {
   const db = getFirestore(app);
   const { user } = useUser();
   const [userLog, setUserLog] = useState(null);
-  const [userData, setUserData] = useState();
+  const [isLoading, setIsLoading] = React.useState(true);
+
+  const handleLoading = () => {
+    setIsLoading(false);
+  };
 
   useEffect(() => {
-    user && setUserData(user);
     !userLog && user && getUserLogs(user);
   }, [user]);
 
+  useEffect(() => {
+    window.addEventListener("load", handleLoading());
+    return () => window.removeEventListener("load", handleLoading());
+  }, []);
+
   const getUserLogs = async (user) => {
     const docSnap = await getDoc(doc(db, "User_Log", user?.id));
-    if (docSnap.exists()) {
-      const docData = docSnap.data();
-      setUserLog(docData);
+    if (docSnap?.exists()) {
+      setUserLog(docSnap?.data());
     }
   };
 
-  return (
-    <div>
-      {/* {userData && getUserLogs()} */}
-      {userLog ? <FileCards userLog={userLog} /> : <FileEmpty />}
-    </div>
+  return !isLoading ? (
+    <div>{userLog ? <FileCards userLog={userLog} /> : <EmptyData />}</div>
+  ) : (
+    <Loading />
   );
 }
 

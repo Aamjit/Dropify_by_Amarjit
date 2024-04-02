@@ -21,6 +21,7 @@ import ShortUrl from "../../../_utils/ShortUrl";
 import { useRouter } from "next/navigation";
 import turl from "turl";
 import toast from "react-hot-toast";
+import Loading from "../../loading"
 
 function Uploads() {
   const router = useRouter();
@@ -31,9 +32,12 @@ function Uploads() {
   const [showSuccess, setShowSuccess] = useState(false);
   const [uploadCompleted, setUploadCompleted] = useState(false);
   const [fileId, setFileId] = useState();
+  const [isLoading, setIsLoading] = useState(true);
 
-  // console.log(ShortUrl());
-  // console.log(window.location.host);
+  useEffect(() => {
+    window.addEventListener("load", setIsLoading(false));
+    return () => window.removeEventListener("load", setIsLoading(false));
+  }, [isLoading]);
 
   const uploadFile = (file) => {
     const metadata = {
@@ -114,7 +118,7 @@ function Uploads() {
       FileName: fileObj.FileName,
       FileUrl: fileObj.FileUrl,
       FileType: fileObj.FileType,
-      FileSize: (fileObj.FileSize/1024/1024).toFixed(2) + " MB", //
+      FileSize: (fileObj.FileSize / 1024 / 1024).toFixed(2) + " MB", //
       UploadedDate: new Date().toDateString(),
       UploadedTime: new Date().getTime(),
     };
@@ -153,7 +157,9 @@ function Uploads() {
       }, 3000);
   }, [uploadCompleted == true]);
 
-  return (
+  return isLoading ? (
+    <Loading />
+  ) : (
     <div>
       <div
         className="fixed"

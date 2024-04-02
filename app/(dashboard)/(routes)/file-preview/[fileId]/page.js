@@ -8,11 +8,19 @@ import FileForm from "./_components/FileForm";
 import Link from "next/link";
 import { ArrowLeftSquare } from "lucide-react";
 import { useUser } from "@clerk/nextjs";
+import Loading from "../../../loading";
+import EmptyData from "../../../../_components/EmptyData";
 
 function FilePreview({ params }) {
-  const [file, setFile] = useState();
+  const [file, setFile] = useState(null);
   const db = getFirestore(app);
   const User = useUser().user;
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    window.addEventListener("load", setIsLoading(false));
+    return () => window.removeEventListener("load", setIsLoading(false));
+  }, []);
 
   useEffect(() => {
     getFIleInfo(params?.fileId);
@@ -24,12 +32,15 @@ function FilePreview({ params }) {
 
     if (docSnap.exists()) {
       setFile(docSnap.data());
+      console.log(docSnap.data());
     } else {
       console.log("No such document!");
     }
   };
 
-  return (
+  return isLoading ? (
+    <Loading />
+  ) : file ? (
     <div className="py-4 px-10">
       <Link href="/uploads" className="flex my-4 gap-4 ">
         <ArrowLeftSquare /> Go Back
@@ -39,6 +50,8 @@ function FilePreview({ params }) {
         <FileForm file={file} user={User} />
       </div>
     </div>
+  ) : (
+    <EmptyData />
   );
 }
 

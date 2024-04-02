@@ -6,7 +6,7 @@ function FileCards({ userLog }) {
   const [logData, setLogData] = useState();
 
   useEffect(() => {
-    setLogData(userLog.log);
+    setLogData(userLog?.log);
   }, [!logData]);
 
   const filterLog = (fileNameSearch) => {

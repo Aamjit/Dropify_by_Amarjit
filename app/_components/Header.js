@@ -58,7 +58,7 @@ function Header() {
                   </a>
                 </div>
 
-                <div className="block md:hidden">
+                {/* <div className="block md:hidden">
                   <button className="rounded bg-gray-100 p-2 text-gray-600 transition hover:text-gray-600/75">
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
@@ -75,7 +75,7 @@ function Header() {
                       />
                     </svg>
                   </button>
-                </div>
+                </div> */}
               </div>
             </div>
           </div>

@@ -1,11 +1,17 @@
 "use client";
 
-import { CloudUpload, FilesIcon, HelpingHand, ShieldPlusIcon } from "lucide-react";
+import {
+  CloudUpload,
+  FilesIcon,
+  HelpingHand,
+  Minimize2,
+  ShieldPlusIcon,
+} from "lucide-react";
 import Image from "next/image";
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 
-function SideNav() {
+function SideNav({ navVisible, toggleNav }) {
   const menuList = [
     {
       id: 1,
@@ -36,16 +42,34 @@ function SideNav() {
   const router = useRouter();
   let [activeIndex, setActiveIndex] = useState(0);
 
-  const navClicked = (item,index) => {
+  const navClicked = (item, index) => {
     setActiveIndex(index);
-    // console.log(item,index);
     router.push(item.path);
   };
 
+  const goToHome = () => router.push("/");
+
   return (
     <div className="shadow-sm border-r h-full">
-      <div className="p-5 border-b">
-        <Image src="/logo.svg" alt="logo" width={50} height={50} />
+      <div className="p-5 border-b flex justify-between">
+        <Image
+          src="/logo.svg"
+          alt="logo"
+          width={50}
+          height={50}
+          onClick={() => toggleNav()}
+          className="hover:cursor-pointer"
+        />
+        {navVisible ? (
+          <div className="hover:cursor-pointer h-14 p-4">
+            <Minimize2
+              className="my-auto text-primary"
+              onClick={() => toggleNav(false)}
+            />
+          </div>
+        ) : (
+          ""
+        )}
       </div>
       <div className="flex flex-col float-left w-full">
         {menuList.map((item, index) => (
@@ -54,7 +78,7 @@ function SideNav() {
           hover:bg-gray-200 w-full text-gray-600
         ${activeIndex == index ? "bg-blue-50 text-primary" : null}`}
             key={item.id}
-            onClick={()=>navClicked(item,index)}
+            onClick={() => navClicked(item, index)}
           >
             <item.icon />
             <h2>{item.name}</h2>

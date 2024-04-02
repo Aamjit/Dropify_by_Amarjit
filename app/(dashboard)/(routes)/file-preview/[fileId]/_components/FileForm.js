@@ -23,10 +23,9 @@ function FileForm({ file, user }) {
   }, [file]);
 
   const updatePassword = async () => {
-    const passwordValid = checkPasswordValidity(newPassword);
     const fileRef = doc(db, "Uploaded_Files", file?.FileId);
 
-    if (!passwordValid) {
+    if (!checkPasswordValidity(newPassword)) {
       showErrorToast("Password is not valid/strong.");
     } else {
       await updateDoc(fileRef, {
@@ -35,16 +34,12 @@ function FileForm({ file, user }) {
       })
         .then(() => {
           showSuccessToast("Password added successfully");
-          // location.reload();
         })
         .catch((err) => {
           console.log(err);
           showErrorToast("Failed to add password");
         });
     }
-    // else {
-    //   showErrorToast("Password check is not done!");
-    // }
   };
 
   const checkPasswordValidity = (password) => {
