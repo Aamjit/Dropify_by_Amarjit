@@ -1,3 +1,4 @@
+"use client";
 import React, { useState } from "react";
 
 function Announcement() {
@@ -8,7 +9,8 @@ function Announcement() {
       <div>
         <div className="flex items-center justify-between gap-4 bg-indigo-600 px-4 py-3 text-white">
           <p className="text-sm font-mono">
-            Please be advised that this apllication is a work in progress and you might find some bugs or errors.
+            Please be advised that this apllication is a work in progress and
+            you might find some bugs or errors.
             {/* <a href="#" className="inline-block underline">
             Check out this new course!
           </a> */}
