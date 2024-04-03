@@ -15,13 +15,11 @@ import {
   getDoc,
   updateDoc,
 } from "firebase/firestore";
-import UploadSuccess from "./_components/UploadSuccess";
 import { useUser } from "@clerk/nextjs";
 import ShortUrl from "../../../_utils/ShortUrl";
 import { useRouter } from "next/navigation";
-import turl from "turl";
 import toast from "react-hot-toast";
-import Loading from "../../loading"
+import Loading from "../../loading";
 
 function Uploads() {
   const router = useRouter();
@@ -29,7 +27,7 @@ function Uploads() {
   const storage = getStorage(app);
   const db = getFirestore(app);
   const [progress, setProgress] = useState(0);
-  const [showSuccess, setShowSuccess] = useState(false);
+  const [isUploading, setIsUploading] = useState(false);
   const [uploadCompleted, setUploadCompleted] = useState(false);
   const [fileId, setFileId] = useState();
   const [isLoading, setIsLoading] = useState(true);
@@ -40,6 +38,7 @@ function Uploads() {
   }, [isLoading]);
 
   const uploadFile = (file) => {
+    setIsUploading(true);
     const metadata = {
       contentType: file.type,
     };
@@ -57,12 +56,9 @@ function Uploads() {
         setProgress(progress);
       },
       (error) => {
-        // A full list of error codes is available at
-        // https://firebase.google.com/docs/storage/web/handle-errors
-        console.log(error);
+        errorOccured(error);
       },
       () => {
-        // setShowSuccess(true);
         getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
           saveToStore(file, downloadURL);
         });
@@ -72,8 +68,6 @@ function Uploads() {
 
   const saveToStore = async (file, fileUrl) => {
     const docId = Date.now().toString();
-    const turlRef = turl;
-    // const shortUrl = "http://" + window.location.host + "/s/" + ShortUrl();
     const { shortUrl, urlId } = ShortUrl();
 
     const fileObj = {
@@ -100,12 +94,12 @@ function Uploads() {
         setFileId(docId);
         addFileToUserLog(fileObj);
         toast.success("File uploaded successfully.", {
-          position: "top-right",
+          position: "top-center",
           autoClose: 5000,
         });
       })
       .catch((err) => {
-        console.log(err);
+        errorOccured(err);
       });
   };
 
@@ -126,54 +120,50 @@ function Uploads() {
     if (docSnap.exists()) {
       const docData = docSnap.data();
       docData.log.push(userLogObj);
-      console.log(docData);
 
       await updateDoc(userLogRef, {
         log: docData.log,
-      })
-        .then((res) => console.log(res))
-        .catch((err) => console.log(err));
+      }).catch((err) => errorOccured(err));
     } else {
       fileObj &&
         setDoc(userLogRef, {
           log: [userLogObj],
-        })
-          .then((res) => {
-            console.log(res);
-          })
-          .catch((err) => {
-            console.log(err);
-          });
+        }).catch((err) => {
+          errorOccured(err);
+        });
     }
   };
 
+  const errorOccured = (err) => {
+    setUploadCompleted(false);
+    setIsUploading(false);
+    toast.error(err, {
+      position: "top-center",
+      autoClose: 5000,
+    });
+  };
+
   useEffect(() => {
-    uploadCompleted &&
-      fileId &&
-      setTimeout(() => {
-        setUploadCompleted(false);
-        setShowSuccess(false);
-        router.push("/file-preview/" + fileId);
-      }, 3000);
-  }, [uploadCompleted == true]);
+    if (uploadCompleted) {
+      setUploadCompleted(false);
+      setIsUploading(false);
+      router.push("/file-preview/" + fileId);
+    }
+  }, [uploadCompleted]);
 
   return isLoading ? (
     <Loading />
   ) : (
     <div>
-      <div
-        className="fixed"
-        style={{ display: `${showSuccess == true ? "" : "none"}` }}
-      >
-        {/* {showSuccess == true ? (
-          // <UploadSuccess msg={"Uploaded succcessfully!"} />
-          
-        ) : null} */}
-        {/* <UploadSuccess msg={"Uploaded succcessfully!"} /> */}
-        {/* {setTimeout(() => {
-          setShowSuccess(false);
-        }, 3000)} */}
-      </div>
+      {isUploading && (
+        <div
+          className="absolute text-center w-screen md:w-[calc(100%-16rem)] 
+        h-[calc(100%-11%)] z-20 mx-auto text-xl text-white font-semibold
+         bg-black bg-opacity-50"
+        >
+          <div className="relative animate-pulse  top-1/2">Uploading...</div>
+        </div>
+      )}
       <UploadForm
         uploadSelectedFile={(data) => uploadFile(data)}
         progress={progress}

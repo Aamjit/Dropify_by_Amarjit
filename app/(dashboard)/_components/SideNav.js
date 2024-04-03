@@ -57,7 +57,7 @@ function SideNav({ navVisible, toggleNav }) {
           alt="logo"
           width={50}
           height={50}
-          onClick={() => toggleNav()}
+          onClick={() => router.push("/")}
           className="hover:cursor-pointer"
         />
         {navVisible ? (

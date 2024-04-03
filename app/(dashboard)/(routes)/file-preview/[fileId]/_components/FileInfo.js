@@ -12,7 +12,7 @@ function FileInfo({ file }) {
     file && (
       <div
         className="text-center border flex justify-center flex-col items-center
-        p-4 rounded-md border-blue-300 md:w-[50%]"
+        p-4 rounded-md border-blue-300 md:w-2/3"
       >
         <Image
           src={fileType == "image" ? file?.FileUrl : "/documents.png"}
