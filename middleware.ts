@@ -16,7 +16,3 @@ export const config = {
     "/(api|trpc)(.*)"
   ]
 };
-
-// export default ()=>{
-//  null;
-// };
