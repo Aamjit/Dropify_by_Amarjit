@@ -6,20 +6,20 @@ import React, { useEffect, useState } from "react";
 import FileInfo from "./_components/FileInfo";
 import FileForm from "./_components/FileForm";
 import Link from "next/link";
-import { ArrowLeftSquare } from "lucide-react";
 import { useUser } from "@clerk/nextjs";
 import Loading from "../../../loading";
 import EmptyData from "../../../../_components/EmptyData";
 import GlobalApi from "../../../../_utils/GlobalApi";
 import toast from "react-hot-toast";
+// Icons
+import { FaArrowAltCircleLeft } from "react-icons/fa";
 
 function FilePreview({ params }) {
   const [file, setFile] = useState(null);
   const db = getFirestore(app);
   const User = useUser().user;
-  const [isLoading, setIsLoading] = useState(true);
-
-  // const fileRef = doc(db, "Uploaded_Files", file?.FileId);
+  const [isLoading, setIsLoading] = useState(false);
+  const [isSending, setIsSending] = useState(false);
 
   useEffect(() => {
     !file && getFileInfo(params?.fileId);
@@ -32,7 +32,6 @@ function FilePreview({ params }) {
     const docSnap = await getDoc(docRef);
 
     if (docSnap.exists()) {
-      console.log(docSnap.data());
       setFile(docSnap.data());
     } else {
       console.log("No such document!");
@@ -77,21 +76,35 @@ function FilePreview({ params }) {
   const sendEmail = (targetEmail) => {
     const data = {
       targetEmail: targetEmail,
-      userName: user.username,
-      UserfullName: file.UserFullName,
-      fileId: file.FileId,
-      fileName: file.FileName,
-      fileSize: (file.FileSize / 1024 / 1024).toFixed(2) + "MB",
-      fileType: file.FileType,
-      shortUrl: file.ShortUrl,
-      senderImage: file.UserImageUrl,
-      senderEmail: file.UserEmail,
+      userName: User?.username,
+      UserfullName: file?.UserFullName,
+      fileId: file?.FileId,
+      fileName: file?.FileName,
+      fileSize: (file?.FileSize / 1024 / 1024).toFixed(2) + "MB",
+      fileType: file?.FileType,
+      shortUrl: file?.ShortUrl,
+      senderImage: file?.UserImageUrl,
+      senderEmail: file?.UserEmail,
     };
+
+    setIsSending(true);
 
     // send email to the recipient with the details of the shared file
     GlobalApi.SendEmail(data)
-      .then(() => showSuccessToast("Email sent successfully."))
-      .catch((error) => showErrorToast(`Error sending the mail! ${error}`));
+      .then((res) => {
+        console.log(res);
+        // if (res?.status === 200) {
+        showSuccessToast("Email sent successfully.");
+        // } else {
+        //   showErrorToast(`Error sending the mail!`);
+        // }
+        setIsSending(false);
+      })
+      .catch((err) => {
+        console.log(err);
+        showErrorToast(`Error sending the mail!`);
+        setIsSending(false);
+      });
   };
 
   const showSuccessToast = (msg) => {
@@ -109,21 +122,24 @@ function FilePreview({ params }) {
   };
 
   return isLoading ? (
-    <Loading />
+    Loading("Loading")
   ) : file ? (
     <div className="py-4 px-10">
-      <Link href="/uploads" className="flex my-4 gap-4 w-fit">
-        <ArrowLeftSquare /> Go Back
+      <Link href="/uploads" className="flex items-center my-4 gap-4 w-fit">
+        <FaArrowAltCircleLeft size={25} /> Go Back
       </Link>
       <div className="flex gap-5 flex-col md:flex-row flex-grow">
         <FileInfo file={file} />
-        {file?.FileId && User && (
-          <FileForm
-            file={file}
-            updatePassword={updatePassword}
-            sendEmail={sendEmail}
-          />
-        )}
+        {isSending
+          ? Loading("Sending mail")
+          : file?.FileId &&
+            User && (
+              <FileForm
+                file={file}
+                updatePassword={updatePassword}
+                sendEmail={sendEmail}
+              />
+            )}
       </div>
     </div>
   ) : (

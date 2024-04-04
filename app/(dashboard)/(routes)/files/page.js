@@ -11,7 +11,7 @@ function Files() {
   const db = getFirestore(app);
   const { user } = useUser();
   const [userLog, setUserLog] = useState(null);
-  const [isLoading, setIsLoading] = React.useState(true);
+  const [isLoading, setIsLoading] = useState(true);
 
   const handleLoading = () => {
     setIsLoading(false);
@@ -36,7 +36,7 @@ function Files() {
   return !isLoading ? (
     <div>{userLog ? <FileCards userLog={userLog} /> : <EmptyData />}</div>
   ) : (
-    <Loading />
+    Loading("Fetching data")
   );
 }
 

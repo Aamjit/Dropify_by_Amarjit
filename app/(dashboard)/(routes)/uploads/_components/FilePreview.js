@@ -1,5 +1,7 @@
 import Image from "next/image";
 import React from "react";
+// Icons
+import { MdCancel } from "react-icons/md";
 
 function FilePreview({ File, removeFile }) {
 
@@ -14,7 +16,7 @@ function FilePreview({ File, removeFile }) {
           {File.type} - {(File.size / 1024 / 1024).toFixed(2)}MB
         </h2>
       </div>
-      <X className="absolute hover:cursor-pointer text-red-500" onClick={()=>removeFile()}/>
+      <MdCancel size={30} className="absolute hover:cursor-pointer text-red-500" onClick={()=>removeFile()}/>
     </div>
   );
 }

@@ -14,7 +14,8 @@ function TopHeader() {
     md:justify-end"
     >
       <IoMenu
-        className="hover:cursor-pointer text-primary md:hidden" size={25}
+        className="hover:cursor-pointer text-primary md:hidden"
+        size={25}
         onClick={() => setNavVisible(!navVisible)}
       />
       {navVisible ? (
@@ -26,7 +27,7 @@ function TopHeader() {
       )}
       {!navVisible && (
         <Image
-          src={"/logo.svg"}
+          src="/logo.svg"
           width={50}
           height={50}
           alt="Logo"

@@ -32,7 +32,7 @@ export const EmailTemplate = (reqData) => (
           alt="Dropify"
           style={logo}
         />
-        <Text style={paragraph}>Hi {},</Text>
+        <Text style={paragraph}>Hi {reqData?.targetEmail.split("@")[0]},</Text>
         <Text style={paragraph}>Welcome to Dropify,</Text>
         <Text style={paragraph}>
           This mail is to notify you that{" "}
@@ -70,17 +70,11 @@ export const EmailTemplate = (reqData) => (
           Dropify
         </Text>
         <Hr style={hr} />
-        <Text style={footer}>
-          ©2024 | Dropify Inc. | Imphal , Manipur 975010
-        </Text>
+        <Text style={footer}>© Dropify 2024. All rights reserved.</Text>
       </Container>
     </Body>
   </Html>
 );
-
-// KoalaWelcomeEmail.PreviewProps = {
-//   userFirstname: "Alan",
-// } as KoalaWelcomeEmailProps;
 
 export default EmailTemplate;
 
@@ -109,7 +103,7 @@ const fileDesc = {
   borderWidth: "1px",
   borderStyle: "solid",
   padding: "1rem",
-  margin: "2rem 0 2rem 0"
+  margin: "2rem 0 2rem 0",
 };
 
 const highlight = {

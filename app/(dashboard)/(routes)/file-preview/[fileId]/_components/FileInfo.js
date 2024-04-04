@@ -18,8 +18,8 @@ function FileInfo({ file }) {
           src={fileType == "image" ? file?.FileUrl : "/documents.png"}
           width={300}
           height={300}
+          alt="Preview"
         />
-        {/* <iframe src={file?.FileUrl} width={300} style={{ border: 'none' }} frameBorder={0} /> */}
         <h2 className="my-4">{file?.FileName}</h2>
         <p className="mb-2 text-xs text-blue-400 dark:text-gray-400">
           <span className="w-fit text-wrap">{file?.FileType}</span>

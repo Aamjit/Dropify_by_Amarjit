@@ -1,8 +1,9 @@
-import { CopyCheck, CopyIcon } from "lucide-react";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import toast from "react-hot-toast";
+// Icons
+import { LuCopy, LuCopyCheck } from "react-icons/lu";
 
-function FileForm({ file, updatePassword }) {
+function FileForm({ file, updatePassword, sendEmail }) {
   const [showPass, setShowPass] = useState(false);
   const [newPassword, setNewPassword] = useState();
   const [copied, setCopied] = useState(false);
@@ -30,7 +31,7 @@ function FileForm({ file, updatePassword }) {
                 className="p-2 pl-10 m-1 w-full rounded-md bg-gray-100 border-gray-400 text-sm text-gray-700 shadow-md"
               />
               {!copied ? (
-                <CopyIcon
+                <LuCopy
                   className="absolute text-gray-500 ml-2.5 cursor-pointer"
                   onClick={() => {
                     {
@@ -41,7 +42,7 @@ function FileForm({ file, updatePassword }) {
                   }}
                 />
               ) : (
-                <CopyCheck className="absolute text-green-500 ml-2.5" />
+                <LuCopyCheck className="absolute text-green-500 ml-2.5" />
               )}
             </div>
           </div>
@@ -119,6 +120,7 @@ function FileForm({ file, updatePassword }) {
                 id="Email"
                 name="Email"
                 placeholder="john.doe@mail.com"
+                autoComplete="email"
                 onChange={(event) => setTargetEmail(event.target.value)}
                 className="p-2 mt-1 w-full rounded-md border-gray-400 bg-gray-50 text-sm text-gray-700 shadow-md"
               />
@@ -126,7 +128,10 @@ function FileForm({ file, updatePassword }) {
 
             <button
               className="w-full bg-primary text-white rounded-lg py-1.5 my-2.5"
-              onClick={() => sendEmail(targetEmail)}
+              onClick={(e) => {
+                e.preventDefault();
+                sendEmail(targetEmail);
+              }}
             >
               {" "}
               Send Email{" "}

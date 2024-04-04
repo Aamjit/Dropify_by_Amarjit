@@ -1,12 +1,11 @@
-export default function Loading() {
+export default function Loading(msg) {
   // You can add any UI inside Loading, including a Skeleton.
   return (
-    <div className="grid place-items-center mt-32">
-      <p className="animate-pulse">
-        <svg class="animate-spin h-5 w-5 mr-3 ..." viewBox="0 0 24 24"></svg>
-        Loading, Please wait...
-      </p>
-      <img src="/loading.svg" alt="Loading..." />
+    <div className="h-full w-full mt-[calc(10vh+5%)]">
+      <div className="my-auto flex flex-col items-center">
+        <p className="animate-pulse my-auto">{msg}, Please wait...</p>
+        <img src="/loading.svg" alt="Loading..." />
+      </div>
     </div>
   );
 }

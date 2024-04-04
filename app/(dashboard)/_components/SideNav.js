@@ -112,20 +112,62 @@ function SideNav({ navVisible, toggleNav }) {
         />
       </div>
       <div className="flex flex-col gap-6 w-full p-4">
-        {menuList.map(() => (
-          <div className="flex gap-4">
-            <img
-              className="rounded-full bg-gray-300 animate-pulse"
-              width={30}
-              height={30}
-            />
-            <img
-              className="rounded-full bg-gray-300 animate-pulse"
-              width={200}
-              height={30}
-            />
-          </div>
-        ))}
+        <div className="flex gap-4">
+          <img
+            className="rounded-full bg-gray-300 animate-pulse"
+            width={30}
+            height={30}
+            alt="skeleton"
+          />
+          <img
+            className="rounded-full bg-gray-300 animate-pulse"
+            width={200}
+            height={30}
+            alt="skeleton"
+          />
+        </div>
+        <div className="flex gap-4">
+          <img
+            className="rounded-full bg-gray-300 animate-pulse"
+            width={30}
+            height={30}
+            alt="skeleton"
+          />
+          <img
+            className="rounded-full bg-gray-300 animate-pulse"
+            width={200}
+            height={30}
+            alt="skeleton"
+          />
+        </div>
+        <div className="flex gap-4">
+          <img
+            className="rounded-full bg-gray-300 animate-pulse"
+            width={30}
+            height={30}
+            alt="skeleton"
+          />
+          <img
+            className="rounded-full bg-gray-300 animate-pulse"
+            width={200}
+            height={30}
+            alt="skeleton"
+          />
+        </div>
+        <div className="flex gap-4">
+          <img
+            className="rounded-full bg-gray-300 animate-pulse"
+            width={30}
+            height={30}
+            alt="skeleton"
+          />
+          <img
+            className="rounded-full bg-gray-300 animate-pulse"
+            width={200}
+            height={30}
+            alt="skeleton"
+          />
+        </div>
       </div>
     </div>
   );
