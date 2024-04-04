@@ -6,6 +6,17 @@ import Head from "next/head";
 
 const inter = Inter({ subsets: ["latin"] });
 
+export const metadata = {
+  title: "Dropify | Your next file sharing platform",
+  applicationName: "Dropify",
+  referrer: "origin-when-cross-origin",
+  icons: {
+    icon: ["/favicon.ico?v=4"],
+    apple: ['/apple-touch-icon.png'],
+    windows: "/favicon.ico?v=4",
+  },
+};
+
 export default function RootLayout({ children }) {
   return (
     <ClerkProvider>
