@@ -18,13 +18,13 @@ function Files() {
   };
 
   useEffect(() => {
-    !userLog && user && getUserLogs(user);
-  }, [user]);
-
-  useEffect(() => {
     window.addEventListener("load", handleLoading());
     return () => window.removeEventListener("load", handleLoading());
   }, []);
+
+  useEffect(() => {
+    !userLog && user && getUserLogs(user);
+  }, [user]);
 
   const getUserLogs = async (user) => {
     const docSnap = await getDoc(doc(db, "User_Log", user?.id));

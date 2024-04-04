@@ -20,7 +20,7 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <ClerkProvider>
-      <html lang="en">
+      <html lang="en" style={{scrollBehavior:'smooth'}}>
         <Head>
           <title>Dropify | Your next file sharing platform</title>
           <link rel="icon" href="/favicon.ico" sizes="any" />

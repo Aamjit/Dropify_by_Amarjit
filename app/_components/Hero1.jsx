@@ -4,7 +4,7 @@ import Constant from "../_utils/Constant";
 function Hero1() {
   return (
     <section>
-      <div className="mx-auto max-w-screen-xl px-4 pt-28 lg:flex">
+      <div className="mx-auto mb-40 md:mb-16 max-w-screen-xl px-4 pt-28 lg:flex">
         <div className="mx-auto max-w-3xl text-center">
           <h1 className="bg-gradient-to-r from-green-300 via-blue-500 to-purple-600 bg-clip-text text-3xl font-extrabold text-transparent sm:text-5xl">
             Sharing Files Made Easy.

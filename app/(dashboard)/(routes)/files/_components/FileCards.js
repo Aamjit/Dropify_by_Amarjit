@@ -1,6 +1,6 @@
-import { FileSearchIcon } from "lucide-react";
 import React, { useEffect, useState } from "react";
 import FileList from "./FileList";
+import { HiDocumentSearch } from "react-icons/hi";
 
 function FileCards({ userLog }) {
   const [logData, setLogData] = useState();
@@ -37,7 +37,7 @@ function FileCards({ userLog }) {
               filterLog(e.target.value);
             }}
           />
-          <FileSearchIcon className="text-gray-400" />
+          <HiDocumentSearch size={25} className="text-gray-400 m-auto" />
         </div>
       </div>
 

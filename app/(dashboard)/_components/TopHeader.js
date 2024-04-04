@@ -1,15 +1,9 @@
 "use client";
 import { UserButton } from "@clerk/nextjs";
-import {
-  AlignJustify,
-  CroissantIcon,
-  CrossIcon,
-  Minimize2,
-  X,
-} from "lucide-react";
 import Image from "next/image";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import SideNav from "./SideNav";
+import { IoMenu } from "react-icons/io5";
 
 function TopHeader() {
   const [navVisible, setNavVisible] = useState(false);
@@ -19,8 +13,8 @@ function TopHeader() {
       className="flex p-5 border-b items-center justify-between
     md:justify-end"
     >
-      <AlignJustify
-        className="hover:cursor-pointer text-primary md:hidden"
+      <IoMenu
+        className="hover:cursor-pointer text-primary md:hidden" size={25}
         onClick={() => setNavVisible(!navVisible)}
       />
       {navVisible ? (

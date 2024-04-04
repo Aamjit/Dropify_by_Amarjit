@@ -1,11 +1,12 @@
 import Image from "next/image";
+import Link from "next/link";
 import React from "react";
 
 function Header() {
   const navLink = [
     { name: "Home", url: "/" },
     { name: "Upload", url: "/uploads" },
-    { name: "About", url: "/about" },
+    { name: "About", url: "#about" },
   ];
 
   return (
@@ -23,13 +24,14 @@ function Header() {
                 <ul className="flex items-center gap-6 text-sm">
                   {navLink?.map((elem) => (
                     <li key={elem?.name}>
-                      <a
+                      <Link
                         className="text-gray-200 transition hover:text-gray-500/75"
                         href={elem.url}
+                        scroll={true}
                       >
                         {" "}
                         {elem.name}{" "}
-                      </a>
+                      </Link>
                     </li>
                   ))}
                 </ul>
