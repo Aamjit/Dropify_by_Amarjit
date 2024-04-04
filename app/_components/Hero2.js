@@ -34,8 +34,8 @@ function Hero2() {
   ];
   return (
     <div>
-      <section className="bg-gray-900 text-white mt-4" id="about">
-        <div className="max-w-screen-xl px-4 py-8 sm:px-6 sm:py-12 lg:px-8 lg:py-16">
+      <section className="bg-gray-900 text-white mt-4 w-full" id="about">
+        <div className="max-w-screen-xl mx-auto px-4 py-8 sm:px-6 sm:py-12 lg:px-8 lg:py-16">
           <div className="max-w-2xl mx-auto text-center">
             <h2 className="text-3xl font-bold sm:text-4xl">What is Dropify?</h2>
 
