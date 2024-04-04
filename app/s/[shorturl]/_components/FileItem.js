@@ -1,7 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 // Icons
-import { FileDownIcon, LockIcon } from "lucide-react";
-import { BsFileEarmarkArrowDownFill } from "react-icons/bs";
+import { BsFileEarmarkArrowDownFill, FaLock } from "react-icons/bs";
 
 function FileItem({ file }) {
   const [fileType, setFileType] = useState();
