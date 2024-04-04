@@ -11,9 +11,9 @@ export const metadata = {
   applicationName: "Dropify",
   referrer: "origin-when-cross-origin",
   icons: {
-    icon: ["/favicon.ico?v=4"],
+    icon: ["/favicon.png?v=4"],
     apple: ['/apple-touch-icon.png'],
-    windows: "/favicon.ico?v=4",
+    windows: "/favicon.png?v=4",
   },
 };
 
