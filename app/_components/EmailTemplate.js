@@ -15,8 +15,6 @@ import * as React from "react";
 
 const publicLogo = process.env.NEXT_PUBLIC_PUBLIC_LOGO;
 
-console.log(publicLogo);
-
 export const EmailTemplate = (reqData) => (
 	<Html>
 		<Head />

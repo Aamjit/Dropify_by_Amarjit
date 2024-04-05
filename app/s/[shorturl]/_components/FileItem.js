@@ -4,12 +4,12 @@ import { BsFileEarmarkArrowDownFill } from "react-icons/bs";
 import { FaLock, FaLockOpen } from "react-icons/fa";
 
 function FileItem({ file }) {
-	const [fileType, setFileType] = useState();
 	const [isPasswordProtect, setIsPasswordProtect] = useState(true);
 	const [isPasswordCorrect, setIsPasswordCorrect] = useState(false);
 
 	useEffect(() => {
-		file && setFileType(file?.FileType.split("/")[0]);
+		// file && setFileType(file?.FileType.split("/")[0]);
+		console.log(file);
 		file && setIsPasswordProtect(file?.IsPasswordProtected);
 	}, [file]);
 
@@ -52,7 +52,11 @@ function FileItem({ file }) {
 						className={`translate-y-8 flex flex-col gap-4 transform opacity-0 transition-all
            group-hover:translate-y-0 group-hover:opacity-100
            border border-gray-300 rounded-lg p-4 ${
-				!isPasswordCorrect ? "bg-gray-400" : "bg-green-500"
+				isPasswordProtect
+					? !isPasswordCorrect
+						? "bg-gray-400"
+						: "bg-green-500"
+					: "bg-green-500"
 			}`}
 					>
 						{isPasswordProtect && !isPasswordCorrect ? (
@@ -61,10 +65,12 @@ function FileItem({ file }) {
 								<p className="">File is protected</p>
 							</div>
 						) : (
-							<div className="flex text-gray-100 gap-2 justify-center items-center z-10">
-								<FaLockOpen size={25} />
-								<p className="">File Unlocked</p>
-							</div>
+							isPasswordProtect && (
+								<div className="flex text-gray-100 gap-2 justify-center items-center z-10">
+									<FaLockOpen size={25} />
+									<p className="">File Unlocked</p>
+								</div>
+							)
 						)}
 						{isPasswordProtect && (
 							<input

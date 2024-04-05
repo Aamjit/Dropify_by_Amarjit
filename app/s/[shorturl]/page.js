@@ -1,7 +1,6 @@
 "use client";
 import {
 	collection,
-	getDoc,
 	getDocs,
 	getFirestore,
 	limit,
@@ -11,10 +10,14 @@ import {
 import React, { useEffect, useState } from "react";
 import { app } from "../../../FirebaseConfig";
 import FileItem from "./_components/FileItem";
+import EmptyData from "../../_components/EmptyData";
+import Loading from "./_components/loading";
 import Link from "next/link";
+import toast, { Toaster } from "react-hot-toast";
 
 function ShortView({ params }) {
 	const [file, setFile] = useState();
+	const [isLoading, setIsLoading] = useState(true);
 	const db = getFirestore(app);
 
 	useEffect(() => {
@@ -32,19 +35,44 @@ function ShortView({ params }) {
 		if (docSnap) {
 			docSnap.forEach((doc) => {
 				setFile(doc.data());
+				setIsLoading(false);
 			});
 		} else {
-			console.log("No such document!");
+			toast.error("No such document!");
+			setIsLoading(false);
 		}
 	};
 
-	return (
-		<div className="w-full h-screen bg-gray-100 flex justify-center items-center flex-col gap-2">
-			<Link href="">
-				<img src="/logo.svg" alt="logo" width={100} />
-			</Link>
-			{file && <FileItem file={file} />}
+	return !isLoading ? (
+		<div className="w-full h-screen bg-gray-100 flex justify-center items-center flex-col gap-8">
+			<Toaster
+				position="top-center"
+				reverseOrder={false}
+				gutter={8}
+				containerClassName=""
+				toastOptions={{
+					className: "",
+					duration: 3000,
+					style: {
+						background: "#363636",
+						color: "#fff",
+					},
+				}}
+			/>
+
+			{file ? (
+				<>
+					<Link href="">
+						<img src="/logo.svg" alt="logo" width={60} />
+					</Link>
+					<FileItem file={file} />
+				</>
+			) : (
+				<EmptyData />
+			)}
 		</div>
+	) : (
+		Loading("Fetching data")
 	);
 }
 

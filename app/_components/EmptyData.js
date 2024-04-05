@@ -3,7 +3,7 @@ import React from "react";
 function EmptyData() {
 	return (
 		<div>
-			<div className="flex h-fit flex-col bg-white py-4">
+			<div className="flex h-fit flex-col bg-transparent py-4">
 				<img
 					src="/box.png"
 					alt="Empty"

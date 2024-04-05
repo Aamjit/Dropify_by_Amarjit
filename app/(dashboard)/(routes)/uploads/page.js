@@ -20,6 +20,7 @@ import ShortUrl from "../../../_utils/ShortUrl";
 import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
 import Loading from "../../_components/loading";
+import LoadingRing from "../../_components/loadingRing";
 
 function Uploads() {
 	const router = useRouter();
@@ -33,13 +34,11 @@ function Uploads() {
 	const [isLoading, setIsLoading] = useState(true);
 
 	useEffect(() => {
-		console.log("Loading");
 		window.addEventListener("load", setIsLoading(false));
 		return () => window.removeEventListener("load", setIsLoading(false));
 	}, []);
 
 	useEffect(() => {
-		console.log(uploadCompleted);
 		if (uploadCompleted) {
 			setUploadCompleted(false);
 			setIsUploading(false);
@@ -100,16 +99,12 @@ function Uploads() {
 
 		setDoc(doc(db, "Uploaded_Files", docId), fileObj)
 			.then((res) => {
-				setUploadCompleted(true);
 				setFileId(docId);
 				addFileToUserLog(fileObj);
-				toast.success("File uploaded successfully.", {
-					position: "top-center",
-					autoClose: 5000,
-				});
+				toast.success("File uploaded successfully.");
 			})
 			.catch((err) => {
-				errorOccured(err);
+				errorOccured("Failed to upload file. Please try again later.");
 			});
 	};
 
@@ -133,13 +128,17 @@ function Uploads() {
 
 			await updateDoc(userLogRef, {
 				log: docData.log,
-			}).catch((err) => errorOccured(err));
+			})
+				.then(() => setUploadCompleted(true))
+				.catch(() =>
+					errorOccured("Failed to log the file in User Log.")
+				);
 		} else {
 			fileObj &&
 				setDoc(userLogRef, {
 					log: [userLogObj],
-				}).catch((err) => {
-					errorOccured(err);
+				}).catch(() => {
+					errorOccured("Failed to create a new entry for User Log.");
 				});
 		}
 	};
@@ -147,34 +146,14 @@ function Uploads() {
 	const errorOccured = (err) => {
 		setUploadCompleted(false);
 		setIsUploading(false);
-		toast.error(err, {
-			position: "top-center",
-			autoClose: 5000,
-		});
+		toast.error(err);
 	};
 
 	return isLoading ? (
 		Loading("Loading")
 	) : (
 		<div>
-			{isUploading && (
-				<div
-					className="absolute text-center w-screen md:w-[calc(100%-16rem)] 
-        h-[calc(100%-12%)] z-20 mx-auto text-xl text-white font-semibold
-         bg-black bg-opacity-20"
-				>
-					<div className="relative animate-pulse top-40">
-						{" "}
-						<img
-							src="/loading-ring.gif"
-							width={80}
-							alt="Loading"
-							className=" mx-auto"
-						/>
-						Uploading...
-					</div>
-				</div>
-			)}
+			{isUploading && LoadingRing("Uploading...")}
 			<UploadForm
 				uploadSelectedFile={(data) => uploadFile(data)}
 				progress={progress}

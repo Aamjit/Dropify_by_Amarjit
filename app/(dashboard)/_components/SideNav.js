@@ -54,6 +54,7 @@ function SideNav({ navVisible, toggleNav }) {
 	}, [pathname]);
 
 	const navClicked = (item, index) => {
+		navVisible && toggleNav(false);
 		setActiveIndex(index);
 		router.push(item.path);
 	};

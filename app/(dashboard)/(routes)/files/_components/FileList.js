@@ -9,12 +9,7 @@ function FileList({ userLog }) {
 	const router = useRouter();
 
 	const previewSelectedFile = (e) => {
-		const url = readSelectedRow(e);
-	};
-
-	const readSelectedRow = (e) => {
-		const fileId = e?.target.id;
-		console.log(fileId);
+		const fileId = readSelectedRow(e);
 		if (!fileId) {
 			toast.error("Please try again!");
 			return;
@@ -22,9 +17,11 @@ function FileList({ userLog }) {
 		const selectedLog = userLog?.find((log) => {
 			return log.FileId == e?.target.id;
 		});
-
 		router.push("/file-preview/" + selectedLog?.FileId);
-		console.log(selectedLog);
+	};
+
+	const readSelectedRow = (e) => {
+		return e?.target.getAttribute("id");
 	};
 
 	return (

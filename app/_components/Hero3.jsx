@@ -54,7 +54,6 @@ function Hero3() {
 							{howList?.map((list) => (
 								<a
 									className="rounded-xl flex gap-4 items-center sm:items-start sm:flex-col border border-gray-100 p-4 shadow-sm hover:border-gray-200 hover:ring-1 hover:ring-gray-200 focus:outline-none focus:ring"
-									href="#"
 									key={list?.id}
 								>
 									<span className="w-fit h-fit rounded-lg bg-gray-800 p-3">

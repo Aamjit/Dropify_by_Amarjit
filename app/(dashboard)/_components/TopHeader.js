@@ -3,14 +3,16 @@ import { UserButton } from "@clerk/nextjs";
 import Image from "next/image";
 import React, { useState, useEffect } from "react";
 import SideNav from "./SideNav";
+import { useRouter } from "next/navigation";
+// Icons
 import { IoMenu } from "react-icons/io5";
 
 function TopHeader() {
 	const [navVisible, setNavVisible] = useState(false);
 	const [isLoading, setIsLoading] = useState(true);
+	const router = useRouter();
 
 	useEffect(() => {
-		console.log("Loading");
 		window.addEventListener("load", setIsLoading(false));
 		return () => window.removeEventListener("load", setIsLoading(false));
 	}, []);
@@ -42,6 +44,7 @@ function TopHeader() {
 					height={50}
 					alt="Logo"
 					className="md:hidden"
+					onClick={() => router.push("/")}
 				/>
 			)}
 			{!isLoading ? (

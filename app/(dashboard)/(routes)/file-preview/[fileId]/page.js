@@ -8,6 +8,7 @@ import FileForm from "./_components/FileForm";
 import Link from "next/link";
 import { useUser } from "@clerk/nextjs";
 import Loading from "../../../_components/loading";
+import LoadingRing from "../../../_components/loadingRing";
 import EmptyData from "../../../../_components/EmptyData";
 import GlobalApi from "../../../../_utils/GlobalApi";
 import toast from "react-hot-toast";
@@ -74,6 +75,10 @@ function FilePreview({ params }) {
 	};
 
 	const sendEmail = (targetEmail) => {
+		if (!targetEmail) {
+			toast.error(`Email Id is empty.`);
+			return;
+		}
 		const data = {
 			targetEmail: targetEmail,
 			userName: User?.username,
@@ -92,6 +97,7 @@ function FilePreview({ params }) {
 		// send email to the recipient with the details of the shared file
 		GlobalApi.SendEmail(data)
 			.then((res) => {
+				console.log(data, res);
 				if (res?.status === 200) {
 					toast.success("Email sent successfully.");
 				} else {
@@ -108,25 +114,25 @@ function FilePreview({ params }) {
 	return isLoading ? (
 		Loading("Loading")
 	) : file ? (
-		<div className="py-4 px-10">
-			<Link
-				href="/uploads"
-				className="flex items-center my-4 gap-4 w-fit"
-			>
-				<FaArrowAltCircleLeft size={25} /> Go Back
-			</Link>
-			<div className="flex gap-5 flex-col md:flex-row flex-grow">
-				<FileInfo file={file} />
-				{isSending
-					? Loading("Sending mail")
-					: file?.FileId &&
-					  User && (
-							<FileForm
-								file={file}
-								updatePassword={updatePassword}
-								sendEmail={sendEmail}
-							/>
-					  )}
+		<div>
+			{isSending && LoadingRing("Sending File Details...")}
+			<div className="py-4 px-10">
+				<Link
+					href="/uploads"
+					className="flex items-center my-4 gap-4 w-fit"
+				>
+					<FaArrowAltCircleLeft size={25} /> Go Back
+				</Link>
+				<div className="flex gap-5 flex-col md:flex-row flex-grow">
+					<FileInfo file={file} />
+					{file?.FileId && User && (
+						<FileForm
+							file={file}
+							updatePassword={updatePassword}
+							sendEmail={sendEmail}
+						/>
+					)}
+				</div>
 			</div>
 		</div>
 	) : (
