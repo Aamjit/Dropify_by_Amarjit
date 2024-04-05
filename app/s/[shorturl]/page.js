@@ -31,7 +31,6 @@ function ShortView({ params }) {
 		const docSnap = await getDocs(queryRef);
 		if (docSnap) {
 			docSnap.forEach((doc) => {
-				console.log(doc.data());
 				setFile(doc.data());
 			});
 		} else {
@@ -42,7 +41,7 @@ function ShortView({ params }) {
 	return (
 		<div className="w-full h-screen bg-gray-100 flex justify-center items-center flex-col gap-2">
 			<Link href="">
-				<img src="/logo.svg" alt="logo" />
+				<img src="/logo.svg" alt="logo" width={100} />
 			</Link>
 			{file && <FileItem file={file} />}
 		</div>

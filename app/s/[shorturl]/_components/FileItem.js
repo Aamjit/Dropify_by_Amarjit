@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 // Icons
-import { BsFileEarmarkArrowDownFill, FaLock } from "react-icons/bs";
+import { BsFileEarmarkArrowDownFill } from "react-icons/bs";
+import { FaLock, FaLockOpen } from "react-icons/fa";
 
 function FileItem({ file }) {
 	const [fileType, setFileType] = useState();
@@ -48,14 +49,21 @@ function FileItem({ file }) {
 
 				<div className="absolute">
 					<div
-						className="translate-y-8 flex flex-col gap-4 transform opacity-0 transition-all
+						className={`translate-y-8 flex flex-col gap-4 transform opacity-0 transition-all
            group-hover:translate-y-0 group-hover:opacity-100
-           border border-gray-300 rounded-lg p-4 bg-gray-400"
+           border border-gray-300 rounded-lg p-4 ${
+				!isPasswordCorrect ? "bg-gray-400" : "bg-green-500"
+			}`}
 					>
-						{isPasswordProtect && (
+						{isPasswordProtect && !isPasswordCorrect ? (
 							<div className="flex text-gray-100 gap-2 justify-center items-center z-10">
-								<LockIcon />
+								<FaLock size={25} />
 								<p className="">File is protected</p>
+							</div>
+						) : (
+							<div className="flex text-gray-100 gap-2 justify-center items-center z-10">
+								<FaLockOpen size={25} />
+								<p className="">File Unlocked</p>
 							</div>
 						)}
 						{isPasswordProtect && (
@@ -69,13 +77,13 @@ function FileItem({ file }) {
 							/>
 						)}
 						<button
-							disabled={!isPasswordCorrect}
-							className="bg-primary px-4 py-2 text-white rounded-lg flex flex-row justify-center gap-1 disabled:bg-gray-500"
+							disabled={isPasswordProtect && !isPasswordCorrect}
+							className="bg-primary px-4 py-2 text-white rounded-lg flex flex-row items-center justify-center gap-1 disabled:bg-gray-500"
 							onClick={() => {
 								window.open(file?.FileUrl);
 							}}
 						>
-							<BsFileEarmarkArrowDownFill />
+							<BsFileEarmarkArrowDownFill size={25} />
 							Download
 						</button>
 					</div>
@@ -97,14 +105,6 @@ function FileItem({ file }) {
 						⚡{(file.FileSize / 1024 / 1024).toFixed(2)}MB
 					</p>
 				</div>
-
-				{/* <div className="flex flex-row gap-2">
-          <p className="text-sm tracking-widest text-primary">File Type:</p>
-        </div>
-
-        <div className="flex flex-row gap-2">
-          <p className="text-sm tracking-widest text-primary">File Size:</p>
-        </div> */}
 			</div>
 		</div>
 	);
