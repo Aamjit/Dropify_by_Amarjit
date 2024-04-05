@@ -2,14 +2,19 @@ const { default: axios } = require("axios");
 
 let res, err;
 
+const getDomain = () => {
+	return window?.location.host;
+};
+
 const SendEmail = (data) =>
-  axios
-    .post("/api/email", data)
-    .then((res) => (res = res))
-    .catch((err) => (err = err));
+	axios
+		.post("/api/email", data)
+		.then((res) => (res = res))
+		.catch((err) => (err = err));
 
 export default {
-  SendEmail,
-  res,
-  err,
+	getDomain,
+	SendEmail,
+	res,
+	err,
 };
