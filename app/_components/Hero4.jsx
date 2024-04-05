@@ -34,6 +34,7 @@ function Hero4() {
 				<img
 					alt=""
 					src="/start-journey.svg"
+					loading="lazy"
 					className="object-cover sm:h-[calc(100%_-_2rem)] sm:self-end sm:rounded-ss-[30px] md:h-[calc(100%_-_4rem)] md:rounded-ss-[60px]"
 				/>
 			</section>
