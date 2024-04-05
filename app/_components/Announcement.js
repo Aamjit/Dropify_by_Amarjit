@@ -3,12 +3,13 @@ import React, { useState } from "react";
 
 function Announcement() {
 	const [showAnnounce, setShowAnnounce] = useState(true);
-
 	const announcements = [
 		{
+			id: 1,
 			msg: "📢 Please be advised that this apllication is a work in progress and you might run into few issues.",
 		},
 		{
+			id: 2,
 			msg: "📢 We are working on providing the most secure ways for you to access your information.",
 		},
 	];
@@ -17,13 +18,15 @@ function Announcement() {
 		showAnnounce && (
 			<div>
 				<div className="flex items-center justify-between gap-4 bg-indigo-600 px-4 py-3 mb-2 text-white">
-					<div>
+					<ul>
 						{announcements?.map((item) => (
-							<p className="inline-block text-sm font-mono my-2 border-b">
-								{item?.msg}
-							</p>
+							<li className="block" key={item?.id}>
+								<p className="inline-block text-sm font-mono my-2 border-b">
+									{item?.msg}
+								</p>
+							</li>
 						))}
-					</div>
+					</ul>
 
 					<button
 						aria-label="Dismiss"
