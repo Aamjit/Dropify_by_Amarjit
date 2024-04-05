@@ -33,9 +33,19 @@ function Uploads() {
 	const [isLoading, setIsLoading] = useState(true);
 
 	useEffect(() => {
+		console.log("Loading");
 		window.addEventListener("load", setIsLoading(false));
 		return () => window.removeEventListener("load", setIsLoading(false));
-	}, [isLoading]);
+	}, []);
+
+	useEffect(() => {
+		console.log(uploadCompleted);
+		if (uploadCompleted) {
+			setUploadCompleted(false);
+			setIsUploading(false);
+			router.push("/file-preview/" + fileId);
+		}
+	}, [uploadCompleted]);
 
 	const uploadFile = (file) => {
 		setIsUploading(true);
@@ -142,14 +152,6 @@ function Uploads() {
 			autoClose: 5000,
 		});
 	};
-
-	useEffect(() => {
-		if (uploadCompleted) {
-			setUploadCompleted(false);
-			setIsUploading(false);
-			router.push("/file-preview/" + fileId);
-		}
-	}, [uploadCompleted]);
 
 	return isLoading ? (
 		Loading("Loading")

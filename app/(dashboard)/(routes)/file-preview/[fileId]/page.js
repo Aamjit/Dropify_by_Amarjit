@@ -15,17 +15,15 @@ import toast from "react-hot-toast";
 import { FaArrowAltCircleLeft } from "react-icons/fa";
 
 function FilePreview({ params }) {
-	const [file, setFile] = useState(null);
+	const [file, setFile] = useState();
 	const db = getFirestore(app);
 	const User = useUser().user;
-	const [isLoading, setIsLoading] = useState(false);
+	const [isLoading, setIsLoading] = useState(true);
 	const [isSending, setIsSending] = useState(false);
 
 	useEffect(() => {
 		!file && getFileInfo(params?.fileId);
-		window.addEventListener("load", setIsLoading(false));
-		return () => window.removeEventListener("load", setIsLoading(false));
-	}, [!file]);
+	}, [params]);
 
 	const getFileInfo = async (id) => {
 		const docRef = doc(db, "Uploaded_Files", id);
@@ -33,8 +31,10 @@ function FilePreview({ params }) {
 
 		if (docSnap.exists()) {
 			setFile(docSnap.data());
+			setIsLoading(false);
 		} else {
-			console.log("No such document!");
+			setIsLoading(false);
+			toast.error("No such document!");
 		}
 	};
 
@@ -42,7 +42,7 @@ function FilePreview({ params }) {
 		const fileRef = doc(db, "Uploaded_Files", file?.FileId);
 		const checkPassword = checkPasswordValidity(password);
 		if (!checkPassword?.state) {
-			showErrorToast(checkPassword?.msg);
+			toast.error(checkPassword?.msg);
 		} else {
 			fileRef &&
 				password &&
@@ -52,12 +52,12 @@ function FilePreview({ params }) {
 				})
 					.then(() => {
 						file?.IsPasswordProtected
-							? showSuccessToast("Password updated successfully")
-							: showSuccessToast("Password added successfully");
+							? toast.success("Password updated successfully")
+							: toast.success("Password added successfully");
 						getFileInfo(file?.FileId);
 					})
 					.catch((err) => {
-						showErrorToast("Failed to add/update password");
+						toast.error("Failed to add/update password");
 					}));
 		}
 	};
@@ -93,31 +93,16 @@ function FilePreview({ params }) {
 		GlobalApi.SendEmail(data)
 			.then((res) => {
 				if (res?.status === 200) {
-					showSuccessToast("Email sent successfully.");
+					toast.success("Email sent successfully.");
 				} else {
-					showErrorToast(`Error sending the mail!`);
+					toast.error(`Error sending the mail!`);
 				}
 				setIsSending(false);
 			})
-			.catch((err) => {
-				console.log(err);
-				showErrorToast(`Error sending the mail!`);
+			.catch(() => {
+				toast.error(`Error sending the mail!`);
 				setIsSending(false);
 			});
-	};
-
-	const showSuccessToast = (msg) => {
-		toast.success(msg, {
-			position: "top-center",
-			autoClose: 5000,
-		});
-	};
-
-	const showErrorToast = (msg) => {
-		toast.error(msg, {
-			position: "top-center",
-			autoClose: 5000,
-		});
 	};
 
 	return isLoading ? (

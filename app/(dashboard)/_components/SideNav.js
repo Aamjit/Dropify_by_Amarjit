@@ -41,26 +41,22 @@ function SideNav({ navVisible, toggleNav }) {
 	const [activeIndex, setActiveIndex] = useState(0);
 	const [isLoading, setIsLoading] = React.useState(true);
 
-	const handleLoading = () => {
-		setIsLoading(false);
-	};
-
 	useEffect(() => {
-		window.addEventListener("load", handleLoading());
-		return () => window.removeEventListener("load", handleLoading());
+		window.addEventListener("load", setIsLoading(false));
+		return () => window.removeEventListener("load", setIsLoading(false));
 	}, []);
-
-	const navClicked = (item, index) => {
-		setActiveIndex(index);
-		router.push(item.path);
-	};
 
 	useEffect(() => {
 		pathname &&
 			setActiveIndex(
 				menuList.findIndex((elem) => elem?.path === pathname)
-			); // elem?.path == pathname
+			);
 	}, [pathname]);
+
+	const navClicked = (item, index) => {
+		setActiveIndex(index);
+		router.push(item.path);
+	};
 
 	return !isLoading ? (
 		<div className="shadow-sm border-r h-full">
@@ -114,9 +110,9 @@ function SideNav({ navVisible, toggleNav }) {
 					alt=""
 				/>
 			</div>
-			<div className="flex flex-col gap-6 w-full p-4">
-				{menuList.map(() => (
-					<div className="flex gap-4">
+			<ul className="flex flex-col gap-6 w-full p-4">
+				{menuList.map((item) => (
+					<li className="flex gap-4" id={item?.id}>
 						<img
 							className="rounded-full bg-gray-300 animate-pulse"
 							width={30}
@@ -129,51 +125,9 @@ function SideNav({ navVisible, toggleNav }) {
 							height={30}
 							alt=""
 						/>
-					</div>
+					</li>
 				))}
-				{/* <div className="flex gap-4">
-					<img
-						className="rounded-full bg-gray-300 animate-pulse"
-						width={30}
-						height={30}
-						alt="skeleton"
-					/>
-					<img
-						className="rounded-full bg-gray-300 animate-pulse"
-						width={200}
-						height={30}
-						alt="skeleton"
-					/>
-				</div>
-				<div className="flex gap-4">
-					<img
-						className="rounded-full bg-gray-300 animate-pulse"
-						width={30}
-						height={30}
-						alt="skeleton"
-					/>
-					<img
-						className="rounded-full bg-gray-300 animate-pulse"
-						width={200}
-						height={30}
-						alt="skeleton"
-					/>
-				</div>
-				<div className="flex gap-4">
-					<img
-						className="rounded-full bg-gray-300 animate-pulse"
-						width={30}
-						height={30}
-						alt="skeleton"
-					/>
-					<img
-						className="rounded-full bg-gray-300 animate-pulse"
-						width={200}
-						height={30}
-						alt="skeleton"
-					/>
-				</div> */}
-			</div>
+			</ul>
 		</div>
 	);
 }

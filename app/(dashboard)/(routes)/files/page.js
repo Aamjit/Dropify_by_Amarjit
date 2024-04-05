@@ -10,26 +10,19 @@ import Loading from "../../_components/loading";
 function Files() {
 	const db = getFirestore(app);
 	const { user } = useUser();
-	const [userLog, setUserLog] = useState(null);
+	const [userLog, setUserLog] = useState();
 	const [isLoading, setIsLoading] = useState(true);
 
-	const handleLoading = () => {
-		setIsLoading(false);
-	};
-
+	// Get the User Logs.
 	useEffect(() => {
-		window.addEventListener("load", handleLoading());
-		return () => window.removeEventListener("load", handleLoading());
-	}, []);
-
-	useEffect(() => {
-		!userLog && user && getUserLogs(user);
-	}, [!userLog]);
+		user && !userLog && getUserLogs(user);
+	}, [user]);
 
 	const getUserLogs = async (user) => {
 		const docSnap = await getDoc(doc(db, "User_Log", user?.id));
 		if (docSnap?.exists()) {
 			setUserLog(docSnap?.data());
+			setIsLoading(false);
 		}
 	};
 
