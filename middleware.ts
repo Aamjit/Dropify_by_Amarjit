@@ -7,7 +7,7 @@ export default authMiddleware({
 	publicRoutes: ["/", "/api/(.*)", "/s/(.*)"], //  '/sign-in', '/dashboard', '/files'
 	authorizedParties: [
 		"http://localhost:3000",
-		"https://dropify-by-amarjit.vercel.app/",
+		"https://dropify-by-amarjit.vercel.app/(.*)",
 	],
 });
 
