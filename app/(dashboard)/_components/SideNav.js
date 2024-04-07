@@ -113,7 +113,7 @@ function SideNav({ navVisible, toggleNav }) {
 			</div>
 			<ul className="flex flex-col gap-6 w-full p-4">
 				{menuList.map((item) => (
-					<li className="flex gap-4" id={item?.id}>
+					<li className="flex gap-4" key={item?.id}>
 						<img
 							className="rounded-full bg-gray-300 animate-pulse"
 							width={30}

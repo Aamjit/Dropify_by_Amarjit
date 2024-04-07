@@ -1,10 +1,22 @@
 const { default: axios } = require("axios");
+import { useAuth, currentUser } from "@clerk/nextjs";
+
+function useFetch() {
+	const { getToken } = useAuth();
+
+	const authenticatedFetch = async (...args) => {
+		return fetch(...args, {
+			headers: { Authorization: `Bearer ${await getToken()}` },
+		}).then((res) => {
+			console.log("Response: ", res);
+			res.json();
+		});
+	};
+
+	return authenticatedFetch;
+}
 
 let res, err;
-
-const getDomain = () => {
-	return window?.location.host;
-};
 
 const SendEmail = (data) =>
 	axios
@@ -13,7 +25,8 @@ const SendEmail = (data) =>
 		.catch((err) => (err = err));
 
 export default {
-	getDomain,
+	// getDomain,
+	useFetch,
 	SendEmail,
 	res,
 	err,

@@ -48,7 +48,7 @@ function TopHeader() {
 				/>
 			)}
 			{!isLoading ? (
-				<UserButton />
+				<UserButton afterSignOutUrl="/" />
 			) : (
 				// Skeleton
 				<img

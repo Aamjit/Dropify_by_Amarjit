@@ -1,7 +1,8 @@
 import { Inter } from "next/font/google";
 import "./globals.css";
-import { ClerkProvider } from "@clerk/nextjs";
+import { ClerkProvider, SignedIn } from "@clerk/nextjs";
 import { Toaster } from "react-hot-toast";
+// import GlobalApi from "./_utils/GlobalApi";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -16,28 +17,35 @@ export const metadata = {
 	},
 };
 
+// GlobalApi.useFetch();
+
 export default function RootLayout({ children }) {
 	return (
-		<ClerkProvider>
-			<html lang="en" style={{ scrollBehavior: "smooth" }}>
-				<body>
-					<Toaster
-						position="top-center"
-						reverseOrder={false}
-						gutter={8}
-						containerClassName=""
-						toastOptions={{
-							className: "",
-							duration: 3000,
-							style: {
-								background: "#363636",
-								color: "#fff",
-							},
-						}}
-					/>
+		<html lang="en" style={{ scrollBehavior: "smooth" }}>
+			<body>
+				<Toaster
+					position="top-center"
+					reverseOrder={false}
+					gutter={8}
+					containerClassName=""
+					toastOptions={{
+						className: "",
+						duration: 3000,
+						style: {
+							background: "#363636",
+							color: "#fff",
+						},
+					}}
+				/>
+				<ClerkProvider
+					signInUrl="/sign-in"
+					supportEmail="amarjityanglem563@gmail.com"
+				>
+					{/* <SignedIn> */}
 					{children}
-				</body>
-			</html>
-		</ClerkProvider>
+					{/* </SignedIn> */}
+				</ClerkProvider>
+			</body>
+		</html>
 	);
 }

@@ -57,7 +57,7 @@ function Footer() {
 
 				<ul className="mt-12 flex flex-wrap justify-center gap-6 md:gap-8 lg:gap-12">
 					{navLink.map((item) => (
-						<li>
+						<li key={item?.id}>
 							<a
 								className="text-gray-700 transition hover:text-gray-700/75"
 								href={item.url}
@@ -71,7 +71,7 @@ function Footer() {
 
 				<ul className="mt-12 flex justify-center gap-6 md:gap-8">
 					{socialLink.map((item) => (
-						<li>
+						<li key={item?.name}>
 							<a
 								href={item.url}
 								rel="noreferrer"
