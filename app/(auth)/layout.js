@@ -1,17 +1,12 @@
 import React from "react";
-import { auth } from "@clerk/nextjs";
+import { auth, SignedIn, SignedOut, RedirectToSignUp } from "@clerk/nextjs";
 import { redirect } from "next/navigation";
 
 function layout({ children }) {
 	// Get the userId from auth() -- if null, the user is not signed in
 	const { userId } = auth();
 
-	return (
-		<div>
-			{console.log("User ID:" + userId)}
-			{userId ? redirect("/uploads") : children}
-		</div>
-	);
+	return <div>{userId ? redirect("/uploads") : children}</div>;
 }
 
 export default layout;
