@@ -31,16 +31,18 @@ function ShortView({ params }) {
 			limit(1)
 		);
 
-		const docSnap = await getDocs(queryRef);
-		if (docSnap) {
-			docSnap.forEach((doc) => {
-				setFile(doc.data());
+		// const docSnap = await getDocs(queryRef);
+		await getDocs(queryRef).then((res) => {
+			if (!res?.empty) {
+				res.forEach((doc) => {
+					setFile(doc.data());
+					setIsLoading(false);
+				});
+			} else {
+				toast.error("No such document!");
 				setIsLoading(false);
-			});
-		} else {
-			toast.error("No such document!");
-			setIsLoading(false);
-		}
+			}
+		});
 	};
 
 	return !isLoading ? (

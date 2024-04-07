@@ -52,7 +52,7 @@ function Uploads() {
 			contentType: file.type,
 		};
 
-		const fileRef = ref(storage, "User_Files/" + file?.name);
+		const fileRef = ref(storage, `${user.id}` + file?.name);
 		const uploadTask = uploadBytesResumable(fileRef, file, metadata);
 
 		// Listen for state changes, errors, and completion of the upload.
@@ -129,7 +129,10 @@ function Uploads() {
 			await updateDoc(userLogRef, {
 				log: docData.log,
 			})
-				.then(() => setUploadCompleted(true))
+				.then(() => {
+					setIsUploading(false);
+					setUploadCompleted(true);
+				})
 				.catch(() =>
 					errorOccured("Failed to log the file in User Log.")
 				);
