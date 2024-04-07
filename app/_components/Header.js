@@ -50,8 +50,8 @@ function Header() {
 									<a
 										className="rounded-md bg-primary px-5 py-2.5 text-sm font-medium text-white shadow
                             transition hover:bg-blue-800"
-										// href="/sign-up"	Development
-										href="/uploads" // Production
+										href="/sign-up" // Development
+										// href="/uploads" // Production
 									>
 										Get Started
 									</a>
