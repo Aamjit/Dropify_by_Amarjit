@@ -1,5 +1,7 @@
-const { default: axios } = require("axios");
 import { useAuth, currentUser } from "@clerk/nextjs";
+
+const { default: axios } = require("axios");
+let res, err;
 
 function useFetch() {
 	const { getToken } = useAuth();
@@ -16,8 +18,6 @@ function useFetch() {
 	return authenticatedFetch;
 }
 
-let res, err;
-
 const SendEmail = (data) =>
 	axios
 		.post("/api/email", data)
@@ -25,7 +25,6 @@ const SendEmail = (data) =>
 		.catch((err) => (err = err));
 
 export default {
-	// getDomain,
 	useFetch,
 	SendEmail,
 	res,

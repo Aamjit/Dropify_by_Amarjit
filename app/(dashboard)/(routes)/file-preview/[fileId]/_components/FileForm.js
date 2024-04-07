@@ -33,10 +33,9 @@ function FileForm({ file, updatePassword, sendEmail }) {
 							{!copied ? (
 								<LuCopy
 									className="absolute text-gray-500 ml-2.5 cursor-pointer"
-									onClick={() => {
-										{
-											toast.success("Copied");
-										}
+									onClick={(e) => {
+										e.preventDefault();
+										toast.success("Copied");
 										navigator.clipboard.writeText(
 											file?.ShortUrl
 										);

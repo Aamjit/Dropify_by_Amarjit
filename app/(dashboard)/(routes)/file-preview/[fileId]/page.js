@@ -6,16 +6,19 @@ import React, { useEffect, useState } from "react";
 import FileInfo from "./_components/FileInfo";
 import FileForm from "./_components/FileForm";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useUser } from "@clerk/nextjs";
 import Loading from "../../../_components/loading";
 import LoadingRing from "../../../_components/loadingRing";
 import EmptyData from "../../../../_components/EmptyData";
 import GlobalApi from "../../../../_utils/GlobalApi";
+import HashApi from "../../../../_utils/HashApi";
 import toast from "react-hot-toast";
 // Icons
 import { FaArrowAltCircleLeft } from "react-icons/fa";
 
 function FilePreview({ params }) {
+	const router = useRouter();
 	const [file, setFile] = useState();
 	const db = getFirestore(app);
 	const User = useUser().user;
@@ -42,25 +45,36 @@ function FilePreview({ params }) {
 	const updatePassword = async (password) => {
 		const fileRef = doc(db, "Uploaded_Files", file?.FileId);
 		const checkPassword = checkPasswordValidity(password);
-		if (!checkPassword?.state) {
-			toast.error(checkPassword?.msg);
-		} else {
-			fileRef &&
-				password &&
-				(await updateDoc(fileRef, {
-					IsPasswordProtected: true,
-					Password: password,
-				})
-					.then(() => {
-						file?.IsPasswordProtected
-							? toast.success("Password updated successfully")
-							: toast.success("Password added successfully");
-						getFileInfo(file?.FileId);
+		let hash;
+
+		HashApi.hashPassword(password).then((res) => {
+			console.log(res);
+			// HashApi.comparePassword(password, res)
+			// 	.then((res) => console.log(res))
+			// 	.catch((err) => console.log(err));
+			// return;
+			hash = res;
+
+			if (!checkPassword?.state) {
+				toast.error(checkPassword?.msg);
+			} else {
+				fileRef &&
+					hash &&
+					updateDoc(fileRef, {
+						IsPasswordProtected: true,
+						Password: hash,
 					})
-					.catch((err) => {
-						toast.error("Failed to add/update password");
-					}));
-		}
+						.then(() => {
+							file?.IsPasswordProtected
+								? toast.success("Password updated successfully")
+								: toast.success("Password added successfully");
+							getFileInfo(file?.FileId);
+						})
+						.catch((err) => {
+							toast.error("Failed to add/update password");
+						});
+			}
+		});
 	};
 
 	const checkPasswordValidity = (password) => {
@@ -118,7 +132,8 @@ function FilePreview({ params }) {
 			{isSending && LoadingRing("Sending File Details...")}
 			<div className="py-4 px-10">
 				<Link
-					href="/uploads"
+					href={""}
+					onClick={() => router.back()}
 					className="flex items-center my-4 gap-4 w-fit"
 				>
 					<FaArrowAltCircleLeft size={25} /> Go Back

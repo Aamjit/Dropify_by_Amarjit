@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from "react";
 // Icons
 import { BsFileEarmarkArrowDownFill } from "react-icons/bs";
 import { FaLock, FaLockOpen } from "react-icons/fa";
+import HashApi from "../../../_utils/HashApi";
 
 function FileItem({ file }) {
 	const [isPasswordProtect, setIsPasswordProtect] = useState(true);
@@ -9,16 +10,14 @@ function FileItem({ file }) {
 
 	useEffect(() => {
 		// file && setFileType(file?.FileType.split("/")[0]);
-		console.log(file);
 		file && setIsPasswordProtect(file?.IsPasswordProtected);
 	}, [file]);
 
-	const checkPasswordInput = (value) => {
-		if (value === file?.Password) {
-			setIsPasswordCorrect(true);
-		} else {
-			setIsPasswordCorrect(false);
-		}
+	const checkPasswordInput = async (value) => {
+		await HashApi.comparePassword(value, file?.Password).then((res) => {
+			console.log(res);
+			setIsPasswordCorrect(res);
+		});
 	};
 
 	return (
