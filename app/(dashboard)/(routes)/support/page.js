@@ -29,9 +29,10 @@ function Support() {
 						new Date().getUTCMonth() + 1
 					}:${new Date().getUTCFullYear()}`
 				),
-				Date.now().toString()
+				"Tickets"
 			),
-			form
+			// Date.now().toString()
+			{ ...form, SubmittedDate: new Date().toUTCString() }
 		)
 			.then((res) => {
 				toast.success("Your support ticket has been submitted.");
