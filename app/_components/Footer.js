@@ -10,7 +10,7 @@ import {
 
 function Footer() {
 	const navLink = [
-		{ id: 1, name: "Home", url: "/" },
+		{ id: 1, name: "Home", url: "#home" },
 		{ id: 2, name: "Upload", url: "/uploads" },
 		{ id: 3, name: "About", url: "#about" },
 	];

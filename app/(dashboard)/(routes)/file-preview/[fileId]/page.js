@@ -14,6 +14,7 @@ import EmptyData from "../../../../_components/EmptyData";
 import GlobalApi from "../../../../_utils/GlobalApi";
 import HashApi from "../../../../_utils/HashApi";
 import toast from "react-hot-toast";
+import Constant from "../../../../_utils/Constant";
 // Icons
 import { FaArrowAltCircleLeft } from "react-icons/fa";
 
@@ -30,7 +31,7 @@ function FilePreview({ params }) {
 	}, [params]);
 
 	const getFileInfo = async (id) => {
-		const docRef = doc(db, "Uploaded_Files", id);
+		const docRef = doc(db, Constant?.fs_uploaded_files, id);
 		const docSnap = await getDoc(docRef);
 
 		if (docSnap.exists()) {
@@ -43,26 +44,18 @@ function FilePreview({ params }) {
 	};
 
 	const updatePassword = async (password) => {
-		const fileRef = doc(db, "Uploaded_Files", file?.FileId);
+		const fileRef = doc(db, Constant?.fs_uploaded_files, file?.FileId);
 		const checkPassword = checkPasswordValidity(password);
-		let hash;
 
-		HashApi.hashPassword(password).then((res) => {
-			console.log(res);
-			// HashApi.comparePassword(password, res)
-			// 	.then((res) => console.log(res))
-			// 	.catch((err) => console.log(err));
-			// return;
-			hash = res;
-
-			if (!checkPassword?.state) {
-				toast.error(checkPassword?.msg);
-			} else {
+		if (!checkPassword?.state) {
+			toast.error(checkPassword?.msg);
+		} else {
+			HashApi.hashPassword(password).then((res) => {
 				fileRef &&
-					hash &&
+					res &&
 					updateDoc(fileRef, {
 						IsPasswordProtected: true,
-						Password: hash,
+						Password: res,
 					})
 						.then(() => {
 							file?.IsPasswordProtected
@@ -73,8 +66,8 @@ function FilePreview({ params }) {
 						.catch((err) => {
 							toast.error("Failed to add/update password");
 						});
-			}
-		});
+			});
+		}
 	};
 
 	const checkPasswordValidity = (password) => {

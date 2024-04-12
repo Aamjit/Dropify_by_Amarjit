@@ -21,6 +21,7 @@ import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
 import Loading from "../../_components/loading";
 import LoadingRing from "../../_components/loadingRing";
+import Constant from "../../../_utils/Constant";
 
 function Uploads() {
 	const router = useRouter();
@@ -52,7 +53,7 @@ function Uploads() {
 			contentType: file.type,
 		};
 
-		const fileRef = ref(storage, `${user.id}` + file?.name);
+		const fileRef = ref(storage, `${user.id}/` + file?.name);
 		const uploadTask = uploadBytesResumable(fileRef, file, metadata);
 
 		// Listen for state changes, errors, and completion of the upload.
@@ -84,20 +85,20 @@ function Uploads() {
 			FileName: file.name,
 			FileType: file.type,
 			FileSize: file.size,
-			UserEmail: user.primaryEmailAddress.emailAddress,
-			UserName: user.username,
-			UserFullName: user.fullName,
+			UserEmail: `${user?.primaryEmailAddress.emailAddress}`,
+			UserName: `${user?.username}`,
+			UserFullName: `${user?.fullName}`,
 			FileUrl: fileUrl,
-			UserId: user.id,
-			UserImageUrl: user.imageUrl,
-			UserPhone: user.primaryPhoneNumber.phoneNumber,
+			UserId: `${user?.id}`,
+			UserImageUrl: `${user?.imageUrl}`,
+			UserPhone: `${user?.primaryPhoneNumber?.phoneNumber}`,
 			Password: "",
 			IsPasswordProtected: false,
 			ShortUrl: shortUrl,
 			ShortUrlId: urlId,
 		};
 
-		setDoc(doc(db, "Uploaded_Files", docId), fileObj)
+		setDoc(doc(db, Constant?.fs_uploaded_files, docId), fileObj)
 			.then((res) => {
 				setFileId(docId);
 				addFileToUserLog(fileObj);
@@ -109,7 +110,7 @@ function Uploads() {
 	};
 
 	const addFileToUserLog = async (fileObj) => {
-		const userLogRef = doc(db, "User_Log", fileObj.UserId);
+		const userLogRef = doc(db, Constant?.fs_user_log, fileObj.UserId);
 		const docSnap = await getDoc(userLogRef);
 
 		const userLogObj = {

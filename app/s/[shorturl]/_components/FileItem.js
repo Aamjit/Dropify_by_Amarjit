@@ -9,7 +9,6 @@ function FileItem({ file }) {
 	const [isPasswordCorrect, setIsPasswordCorrect] = useState(false);
 
 	useEffect(() => {
-		// file && setFileType(file?.FileType.split("/")[0]);
 		file && setIsPasswordProtect(file?.IsPasswordProtected);
 	}, [file]);
 

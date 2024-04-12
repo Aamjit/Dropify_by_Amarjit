@@ -4,14 +4,14 @@ import React from "react";
 
 function Header() {
 	const navLink = [
-		{ name: "Home", url: "/" },
+		{ name: "Home", url: "#home" },
 		{ name: "Upload", url: "/uploads" },
 		{ name: "About", url: "#about" },
 	];
 
 	return (
 		<div>
-			<header>
+			<header id="home">
 				<div className="mx-auto max-w-screen-xl px-4 sm:px-6 lg:px-8">
 					<div
 						className="flex h-16 items-center justify-between

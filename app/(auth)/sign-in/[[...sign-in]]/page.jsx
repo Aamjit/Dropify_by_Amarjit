@@ -3,7 +3,7 @@ import { SignIn } from "@clerk/nextjs";
 
 export default function Page() {
 	return (
-		<section className="bg-gray-900">
+		<section className="bg-gray-900 min-h-screen">
 			<div className="lg:grid lg:min-h-screen lg:grid-cols-12">
 				<aside className="hidden relative lg:block h-16 lg:order-last lg:col-span-5 lg:h-full xl:col-span-6">
 					<img

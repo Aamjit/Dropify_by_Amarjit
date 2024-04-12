@@ -96,7 +96,9 @@ export const EmailTemplate = (reqData) => (
 	</Html>
 );
 
-export default EmailTemplate;
+// export const
+
+export default { EmailTemplate };
 
 const main = {
 	backgroundColor: "#ffffff",

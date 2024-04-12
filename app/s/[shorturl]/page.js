@@ -14,6 +14,7 @@ import EmptyData from "../../_components/EmptyData";
 import Loading from "./_components/loading";
 import Link from "next/link";
 import toast, { Toaster } from "react-hot-toast";
+import Constant from "../../_utils/Constant";
 
 function ShortView({ params }) {
 	const [file, setFile] = useState();
@@ -26,12 +27,11 @@ function ShortView({ params }) {
 
 	const getFIleInfo = async (shorturlId) => {
 		const queryRef = query(
-			collection(db, "Uploaded_Files"),
+			collection(db, Constant?.fs_uploaded_files),
 			where("ShortUrlId", "==", shorturlId),
 			limit(1)
 		);
 
-		// const docSnap = await getDocs(queryRef);
 		await getDocs(queryRef).then((res) => {
 			if (!res?.empty) {
 				res.forEach((doc) => {
