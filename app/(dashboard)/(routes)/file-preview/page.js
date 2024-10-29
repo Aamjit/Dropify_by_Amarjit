@@ -1,41 +1,70 @@
 "use client";
 // import { app } from "@/FirebaseConfig";
-import { app } from "../../../../../FirebaseConfig";
-import { doc, getDoc, getFirestore, updateDoc } from "firebase/firestore";
+import { app } from "../../../../FirebaseConfig";
+import {
+	doc,
+	getDoc,
+	getDocs,
+	query,
+	collection,
+	getFirestore,
+	updateDoc,
+	where,
+	documentId,
+} from "firebase/firestore";
 import React, { useEffect, useState } from "react";
 import FileInfo from "./_components/FileInfo";
 import FileForm from "./_components/FileForm";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useUser } from "@clerk/nextjs";
-import Loading from "../../../_components/loading";
-import LoadingRing from "../../../_components/loadingRing";
-import EmptyData from "../../../../_components/EmptyData";
-import GlobalApi from "../../../../_utils/GlobalApi";
-import HashApi from "../../../../_utils/HashApi";
+import Loading from "../../_components/loading";
+import LoadingRing from "../../_components/loadingRing";
+import EmptyData from "../../../_components/EmptyData";
+import GlobalApi from "../../../_utils/GlobalApi";
+import HashApi from "../../../_utils/HashApi";
 import toast from "react-hot-toast";
-import Constant from "../../../../_utils/Constant";
+import Constant from "../../../_utils/Constant";
 // Icons
 import { FaArrowAltCircleLeft } from "react-icons/fa";
 
 function FilePreview({ params }) {
 	const router = useRouter();
-	const [file, setFile] = useState();
+	const searchParams = useSearchParams();
+	const [files, setFiles] = useState([]);
 	const db = getFirestore(app);
 	const User = useUser().user;
 	const [isLoading, setIsLoading] = useState(true);
 	const [isSending, setIsSending] = useState(false);
+	const fileId = searchParams.get("fileId").split(",");
+
+	// console.log(params, searchParams.get("fileId"));
 
 	useEffect(() => {
-		!file && getFileInfo(params?.fileId);
-	}, [params]);
+		files.length == 0 && getFileInfo(fileId);
+	}, [fileId]);
 
-	const getFileInfo = async (id) => {
-		const docRef = doc(db, Constant?.fs_uploaded_files, id);
-		const docSnap = await getDoc(docRef);
+	const getFileInfo = async (ids) => {
+		const q = query(
+			collection(db, Constant?.fs_uploaded_files),
+			where(documentId(), "in", [...ids])
+		);
 
-		if (docSnap.exists()) {
-			setFile(docSnap.data());
+		// Promise.all();
+		// const docRef = ids.map((id) =>
+		// 	doc(db, Constant?.fs_uploaded_files, id)
+		// );
+		const docSnap = await getDocs(q);
+
+		if (docSnap) {
+			// console.log(docSnap);
+			let docDatas = [];
+			docSnap.forEach((doc) => {
+				docDatas.push(doc.data());
+			});
+			setFiles(docDatas);
+
+			// setFile(docSnap.data());
 			setIsLoading(false);
 		} else {
 			setIsLoading(false);
@@ -81,7 +110,7 @@ function FilePreview({ params }) {
 		}
 	};
 
-	const sendEmail = (targetEmail) => {
+	const sendEmail = (targetEmail, file) => {
 		if (!targetEmail) {
 			toast.error(`Email Id is empty.`);
 			return;
@@ -120,31 +149,44 @@ function FilePreview({ params }) {
 
 	return isLoading ? (
 		Loading("Loading")
-	) : file ? (
-		<div>
-			{isSending && LoadingRing("Sending File Details...")}
-			<div className="py-4 px-10">
-				<Link
-					href={""}
-					onClick={() => router.back()}
-					className="flex items-center my-4 gap-4 w-fit"
-				>
-					<FaArrowAltCircleLeft size={25} /> Go Back
-				</Link>
-				<div className="flex gap-5 flex-col md:flex-row flex-grow">
-					<FileInfo file={file} />
-					{file?.FileId && User && (
-						<FileForm
-							file={file}
-							updatePassword={updatePassword}
-							sendEmail={sendEmail}
-						/>
-					)}
-				</div>
-			</div>
-		</div>
 	) : (
-		<EmptyData />
+		<>
+			<Link
+				href={""}
+				onClick={() => router.back()}
+				className="flex items-center m-4 gap-4 w-fit"
+			>
+				<FaArrowAltCircleLeft size={25} /> Go Back
+			</Link>
+			{files.length > 0 ? (
+				files.map((file) => (
+					<div key={file?.FileId}>
+						{isSending && LoadingRing("Sending File Details...")}
+						<div className="py-4 px-10">
+							{/* <Link
+								href={""}
+								onClick={() => router.back()}
+								className="flex items-center my-4 gap-4 w-fit"
+							>
+								<FaArrowAltCircleLeft size={25} /> Go Back
+							</Link> */}
+							<div className="flex gap-5 flex-col md:flex-row flex-grow">
+								<FileInfo file={file} />
+								{file?.FileId && User && (
+									<FileForm
+										file={file}
+										updatePassword={updatePassword}
+										sendEmail={sendEmail}
+									/>
+								)}
+							</div>
+						</div>
+					</div>
+				))
+			) : (
+				<EmptyData />
+			)}
+		</>
 	);
 }
 

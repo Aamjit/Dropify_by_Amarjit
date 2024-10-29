@@ -134,7 +134,7 @@ function FileForm({ file, updatePassword, sendEmail }) {
 							className="w-full bg-primary text-white rounded-lg py-1.5 my-2.5"
 							onClick={(e) => {
 								e.preventDefault();
-								sendEmail(targetEmail);
+								sendEmail(targetEmail, file);
 							}}
 						>
 							{" "}

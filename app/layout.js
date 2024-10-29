@@ -17,8 +17,6 @@ export const metadata = {
 	},
 };
 
-// GlobalApi.useFetch();
-
 export default function RootLayout({ children }) {
 	return (
 		<html lang="en" style={{ scrollBehavior: "smooth" }}>
@@ -29,7 +27,6 @@ export default function RootLayout({ children }) {
 					gutter={8}
 					containerClassName=""
 					toastOptions={{
-						className: "",
 						duration: 3000,
 						style: {
 							background: "#363636",
@@ -41,9 +38,7 @@ export default function RootLayout({ children }) {
 					signInUrl="/sign-in"
 					supportEmail="amarjityanglem563@gmail.com"
 				>
-					{/* <SignedIn> */}
 					{children}
-					{/* </SignedIn> */}
 				</ClerkProvider>
 			</body>
 		</html>

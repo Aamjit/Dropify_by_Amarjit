@@ -78,8 +78,8 @@ function UploadForm({ uploadSelectedFile, progress }) {
 												or drag and drop
 											</p>
 											<p className="text-xs text-gray-500 ">
-												SVG, PNG, JPG or GIF (MAX SIZE:
-												5MB)
+												SVG, PNG, JPG or GIF (MAX FILES:
+												5, MAX TOTAL SIZE: 10MB)
 											</p>
 										</>
 									)}
@@ -99,6 +99,7 @@ function UploadForm({ uploadSelectedFile, progress }) {
 						{File?.length !== 0
 							? File?.map((item, index) => (
 									<FilePreview
+										key={index}
 										index={index}
 										File={item}
 										removeFile={(e) => {
