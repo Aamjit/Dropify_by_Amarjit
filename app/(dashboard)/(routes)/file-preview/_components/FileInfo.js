@@ -21,7 +21,9 @@ function FileInfo({ file }) {
 					height={300}
 					alt="Preview"
 				/>
-				<h2 className="my-4">{file?.FileName}</h2>
+				<h2 className="my-4 break-words max-w-36 min-w-36">
+					{file?.FileName}
+				</h2>
 				<p className="mb-2 text-xs text-blue-400 dark:text-gray-400">
 					<span className="w-fit text-wrap">{file?.FileType}</span>
 				</p>
