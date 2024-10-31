@@ -1,12 +1,24 @@
-import React, { useState } from "react";
+import React, { useCallback, useState } from "react";
 import ErrorCard from "./ErrorCard";
 import FilePreview from "./FilePreview";
 import ProgressBar from "./ProgressBar";
-import { FaFileUpload } from "react-icons/fa";
+import { useDropzone } from "react-dropzone";
+// Icons
+import { FaFileUpload, FaFileMedical } from "react-icons/fa";
 
 function UploadForm({ uploadSelectedFile, progress }) {
-	const [File, setFile] = useState(null);
+	const [File, setFile] = useState([]);
+	let TempFile;
 	const [errorMsg, setErrorMsg] = useState();
+
+	const onDrop = useCallback((acceptedFiles) => {
+		// Do something with the files
+		setFile(acceptedFiles);
+	}, []);
+
+	const { getRootProps, getInputProps, isDragActive } = useDropzone({
+		onDrop,
+	});
 
 	const onFileSelect = (File) => {
 		if (File && File.size > 5000000) {
@@ -33,32 +45,50 @@ function UploadForm({ uploadSelectedFile, progress }) {
 					</p>
 
 					<div className="flex flex-col items-center justify-center w-full mt-8">
-						{File == null && (
+						{File?.length == 0 && (
 							<label
 								htmlFor="dropzone-file"
+								{...getRootProps()}
 								className="flex flex-col items-center justify-center w-full h-64 border-2 border-gray-300
 										border-dashed rounded-lg cursor-pointer bg-gray-50 
 										hover:bg-gray-200"
 							>
 								<div className="flex flex-col items-center justify-center pt-5 pb-6">
-									<FaFileUpload
-										size={50}
-										className="mb-4 text-primary " //	dark:text-gray-400
-									/>
-									<p className="mb-2 text-sm text-blue-400 ">
-										<span className="font-semibold">
-											Click to upload
-										</span>{" "}
-										or drag and drop
-									</p>
-									<p className="text-xs text-gray-500 ">
-										SVG, PNG, JPG or GIF (MAX SIZE: 5MB)
-									</p>
+									{isDragActive ? (
+										<FaFileMedical
+											size={50}
+											className="mb-4 text-primary animate-pulse"
+										/>
+									) : (
+										<FaFileUpload
+											size={50}
+											className="mb-4 text-primary" //	dark:text-gray-400
+										/>
+									)}
+									{isDragActive ? (
+										<p className="mb-2 text-sm text-blue-400 animate-pulse">
+											Drop the files here ...
+										</p>
+									) : (
+										<>
+											<p className="mb-2 text-sm text-blue-400 ">
+												<span className="font-semibold">
+													Click to upload
+												</span>{" "}
+												or drag and drop
+											</p>
+											<p className="text-xs text-gray-500 ">
+												SVG, PNG, JPG or GIF (MAX FILES:
+												5, MAX TOTAL SIZE: 10MB)
+											</p>
+										</>
+									)}
 								</div>
 								<input
 									id="dropzone-file"
 									type="file"
 									className="hidden"
+									{...getInputProps()}
 									onChange={(event) => {
 										onFileSelect(event.target.files[0]);
 									}}
@@ -66,17 +96,25 @@ function UploadForm({ uploadSelectedFile, progress }) {
 							</label>
 						)}
 						{errorMsg ? <ErrorCard Msg="Error" /> : null}
-						{File ? (
-							<FilePreview
-								File={File}
-								removeFile={() => setFile(null)}
-							/>
-						) : null}
-						{progress != 0 ? (
+						{File?.length !== 0
+							? File?.map((item, index) => (
+									<FilePreview
+										key={index}
+										index={index}
+										File={item}
+										removeFile={(e) => {
+											TempFile = [...File];
+											TempFile.splice(e, 1);
+											setFile(TempFile);
+										}}
+									/>
+							  ))
+							: null}
+						{progress?.progress != 0 ? (
 							<ProgressBar progress={progress} />
 						) : (
 							<button
-								disabled={!File}
+								disabled={File?.length == 0}
 								className="my-4 bg-primary text-white rounded-full w-[40%] px-6 py-2
            disabled:bg-gray-500"
 								onClick={(e) => {

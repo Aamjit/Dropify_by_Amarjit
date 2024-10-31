@@ -5,6 +5,7 @@ import Hero3 from "./_components/Hero3";
 import Hero4 from "./_components/Hero4";
 import Announcement from "./_components/Announcement";
 import Footer from "./_components/Footer";
+import Server from "./api/server";
 
 export default function Home() {
 	return (
