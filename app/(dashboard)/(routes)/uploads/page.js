@@ -3,183 +3,167 @@ import React, { useEffect, useState } from "react";
 import UploadForm from "./_components/UploadForm";
 import { app } from "../../../../FirebaseConfig";
 import {
-  getStorage,
-  ref,
-  uploadBytesResumable,
-  getDownloadURL,
+	getStorage,
+	ref,
+	uploadBytesResumable,
+	getDownloadURL,
 } from "firebase/storage";
 import {
-  getFirestore,
-  doc,
-  setDoc,
-  getDoc,
-  updateDoc,
+	getFirestore,
+	doc,
+	setDoc,
+	getDoc,
+	updateDoc,
 } from "firebase/firestore";
-import UploadSuccess from "./_components/UploadSuccess";
 import { useUser } from "@clerk/nextjs";
 import ShortUrl from "../../../_utils/ShortUrl";
 import { useRouter } from "next/navigation";
-import turl from "turl";
 import toast from "react-hot-toast";
-import Loading from "../../loading"
+import Loading from "../../_components/loading";
+import LoadingRing from "../../_components/loadingRing";
+import Constant from "../../../_utils/Constant";
 
 function Uploads() {
-  const router = useRouter();
-  const { user } = useUser();
-  const storage = getStorage(app);
-  const db = getFirestore(app);
-  const [progress, setProgress] = useState(0);
-  const [showSuccess, setShowSuccess] = useState(false);
-  const [uploadCompleted, setUploadCompleted] = useState(false);
-  const [fileId, setFileId] = useState();
-  const [isLoading, setIsLoading] = useState(true);
+	const router = useRouter();
+	const { user } = useUser();
+	const storage = getStorage(app);
+	const db = getFirestore(app);
+	const [progress, setProgress] = useState(0);
+	const [isUploading, setIsUploading] = useState(false);
+	const [uploadCompleted, setUploadCompleted] = useState(false);
+	const [fileId, setFileId] = useState();
+	const [isLoading, setIsLoading] = useState(true);
 
-  useEffect(() => {
-    window.addEventListener("load", setIsLoading(false));
-    return () => window.removeEventListener("load", setIsLoading(false));
-  }, [isLoading]);
+	useEffect(() => {
+		window.addEventListener("load", setIsLoading(false));
+		return () => window.removeEventListener("load", setIsLoading(false));
+	}, []);
 
-  const uploadFile = (file) => {
-    const metadata = {
-      contentType: file.type,
-    };
+	useEffect(() => {
+		if (uploadCompleted) {
+			setUploadCompleted(false);
+			setIsUploading(false);
+			router.push("/file-preview/" + fileId);
+		}
+	}, [uploadCompleted]);
 
-    const fileRef = ref(storage, "User_Files/" + file?.name);
-    const uploadTask = uploadBytesResumable(fileRef, file, metadata);
+	const uploadFile = (file) => {
+		setIsUploading(true);
+		const metadata = {
+			contentType: file.type,
+		};
 
-    // Listen for state changes, errors, and completion of the upload.
-    uploadTask.on(
-      "state_changed",
-      (snapshot) => {
-        // Get task progress, including the number of bytes uploaded and the total number of bytes to be uploaded
-        const progress =
-          (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-        setProgress(progress);
-      },
-      (error) => {
-        // A full list of error codes is available at
-        // https://firebase.google.com/docs/storage/web/handle-errors
-        console.log(error);
-      },
-      () => {
-        // setShowSuccess(true);
-        getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
-          saveToStore(file, downloadURL);
-        });
-      }
-    );
-  };
+		const fileRef = ref(storage, `${user.id}/` + file?.name);
+		const uploadTask = uploadBytesResumable(fileRef, file, metadata);
 
-  const saveToStore = async (file, fileUrl) => {
-    const docId = Date.now().toString();
-    const turlRef = turl;
-    // const shortUrl = "http://" + window.location.host + "/s/" + ShortUrl();
-    const { shortUrl, urlId } = ShortUrl();
+		// Listen for state changes, errors, and completion of the upload.
+		uploadTask.on(
+			"state_changed",
+			(snapshot) => {
+				// Get task progress, including the number of bytes uploaded and the total number of bytes to be uploaded
+				const progress =
+					(snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+				setProgress(progress);
+			},
+			(error) => {
+				errorOccured(error);
+			},
+			() => {
+				getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
+					saveToStore(file, downloadURL);
+				});
+			}
+		);
+	};
 
-    const fileObj = {
-      FileId: docId,
-      FileName: file.name,
-      FileType: file.type,
-      FileSize: file.size,
-      UserEmail: user.primaryEmailAddress.emailAddress,
-      UserName: user.username,
-      UserFullName: user.fullName,
-      FileUrl: fileUrl,
-      UserId: user.id,
-      UserImageUrl: user.imageUrl,
-      UserPhone: user.primaryPhoneNumber.phoneNumber,
-      Password: "",
-      IsPasswordProtected: false,
-      ShortUrl: shortUrl,
-      ShortUrlId: urlId,
-    };
+	const saveToStore = async (file, fileUrl) => {
+		const docId = Date.now().toString();
+		const { shortUrl, urlId } = ShortUrl();
 
-    setDoc(doc(db, "Uploaded_Files", docId), fileObj)
-      .then((res) => {
-        setUploadCompleted(true);
-        setFileId(docId);
-        addFileToUserLog(fileObj);
-        toast.success("File uploaded successfully.", {
-          position: "top-right",
-          autoClose: 5000,
-        });
-      })
-      .catch((err) => {
-        console.log(err);
-      });
-  };
+		const fileObj = {
+			FileId: docId,
+			FileName: file.name,
+			FileType: file.type,
+			FileSize: file.size,
+			UserEmail: `${user?.primaryEmailAddress.emailAddress}`,
+			UserName: `${user?.username}`,
+			UserFullName: `${user?.fullName}`,
+			FileUrl: fileUrl,
+			UserId: `${user?.id}`,
+			UserImageUrl: `${user?.imageUrl}`,
+			UserPhone: `${user?.primaryPhoneNumber?.phoneNumber}`,
+			Password: "",
+			IsPasswordProtected: false,
+			ShortUrl: shortUrl,
+			ShortUrlId: urlId,
+		};
 
-  const addFileToUserLog = async (fileObj) => {
-    const userLogRef = doc(db, "User_Log", fileObj.UserId);
-    const docSnap = await getDoc(userLogRef);
+		setDoc(doc(db, Constant?.fs_uploaded_files, docId), fileObj)
+			.then((res) => {
+				setFileId(docId);
+				addFileToUserLog(fileObj);
+				toast.success("File uploaded successfully.");
+			})
+			.catch((err) => {
+				errorOccured("Failed to upload file. Please try again later.");
+			});
+	};
 
-    const userLogObj = {
-      FileId: fileObj.FileId,
-      FileName: fileObj.FileName,
-      FileUrl: fileObj.FileUrl,
-      FileType: fileObj.FileType,
-      FileSize: (fileObj.FileSize / 1024 / 1024).toFixed(2) + " MB", //
-      UploadedDate: new Date().toDateString(),
-      UploadedTime: new Date().getTime(),
-    };
+	const addFileToUserLog = async (fileObj) => {
+		const userLogRef = doc(db, Constant?.fs_user_log, fileObj.UserId);
+		const docSnap = await getDoc(userLogRef);
 
-    if (docSnap.exists()) {
-      const docData = docSnap.data();
-      docData.log.push(userLogObj);
-      console.log(docData);
+		const userLogObj = {
+			FileId: fileObj.FileId,
+			FileName: fileObj.FileName,
+			FileUrl: fileObj.FileUrl,
+			FileType: fileObj.FileType,
+			FileSize: (fileObj.FileSize / 1024 / 1024).toFixed(2) + " MB", //
+			UploadedDate: new Date().toDateString(),
+			UploadedTime: new Date().getTime(),
+		};
 
-      await updateDoc(userLogRef, {
-        log: docData.log,
-      })
-        .then((res) => console.log(res))
-        .catch((err) => console.log(err));
-    } else {
-      fileObj &&
-        setDoc(userLogRef, {
-          log: [userLogObj],
-        })
-          .then((res) => {
-            console.log(res);
-          })
-          .catch((err) => {
-            console.log(err);
-          });
-    }
-  };
+		if (docSnap.exists()) {
+			const docData = docSnap.data();
+			docData.log.push(userLogObj);
 
-  useEffect(() => {
-    uploadCompleted &&
-      fileId &&
-      setTimeout(() => {
-        setUploadCompleted(false);
-        setShowSuccess(false);
-        router.push("/file-preview/" + fileId);
-      }, 3000);
-  }, [uploadCompleted == true]);
+			await updateDoc(userLogRef, {
+				log: docData.log,
+			})
+				.then(() => {
+					setIsUploading(false);
+					setUploadCompleted(true);
+				})
+				.catch(() =>
+					errorOccured("Failed to log the file in User Log.")
+				);
+		} else {
+			fileObj &&
+				setDoc(userLogRef, {
+					log: [userLogObj],
+				}).catch(() => {
+					errorOccured("Failed to create a new entry for User Log.");
+				});
+		}
+	};
 
-  return isLoading ? (
-    <Loading />
-  ) : (
-    <div>
-      <div
-        className="fixed"
-        style={{ display: `${showSuccess == true ? "" : "none"}` }}
-      >
-        {/* {showSuccess == true ? (
-          // <UploadSuccess msg={"Uploaded succcessfully!"} />
-          
-        ) : null} */}
-        {/* <UploadSuccess msg={"Uploaded succcessfully!"} /> */}
-        {/* {setTimeout(() => {
-          setShowSuccess(false);
-        }, 3000)} */}
-      </div>
-      <UploadForm
-        uploadSelectedFile={(data) => uploadFile(data)}
-        progress={progress}
-      />
-    </div>
-  );
+	const errorOccured = (err) => {
+		setUploadCompleted(false);
+		setIsUploading(false);
+		toast.error(err);
+	};
+
+	return isLoading ? (
+		Loading("Loading")
+	) : (
+		<div>
+			{isUploading && LoadingRing("Uploading...")}
+			<UploadForm
+				uploadSelectedFile={(data) => uploadFile(data)}
+				progress={progress}
+			/>
+		</div>
+	);
 }
 
 export default Uploads;
